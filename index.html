@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BRIO — Agent IA · Amcor Flexibles</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0f2d52;--navy2:#163a6b;--navy3:#1a4480;
+  --blue:#1e6fd9;--blue3:#5a9ef5;--blue-light:#e8f1fd;
+  --gold:#f59e0b;--gold2:#fbbf24;
+  --emerald:#10b981;--amber:#f97316;
+  --bg:#f0f4fa;--card:#fff;--card2:#f7fafd;
+  --border:#dce6f4;--border2:#c3d4ec;
+  --text:#0f2d52;--muted:#5a7499;--muted2:#8facc5;
+  --ok:#059669;--ok-bg:#d1fae5;--ok-border:#6ee7b7;
+  --wn:#d97706;--wn-bg:#fef3c7;--wn-border:#fcd34d;
+  --er:#dc2626;--er-bg:#fee2e2;--er-border:#fca5a5;
+  --r:14px;
+  --sh:0 2px 16px rgba(15,45,82,.07);
+  --sh-lg:0 8px 40px rgba(15,45,82,.13);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* ── LOGIN ── */
+#loginScreen{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,#0d2a4e 0%,#1a4480 45%,#1e6fd9 100%);overflow:auto;padding:16px;}
+.lgeo{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.lgeo::before{content:"";position:absolute;width:600px;height:600px;border:1px solid rgba(255,255,255,.05);border-radius:50%;top:-200px;right:-100px;}
+.lgeo::after{content:"";position:absolute;width:350px;height:350px;border:1px solid rgba(255,255,255,.05);border-radius:50%;bottom:-120px;left:-60px;}
+.lcard{position:relative;width:440px;max-width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:22px;padding:40px 36px;backdrop-filter:blur(28px);}
+.lbrand{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+.lbrand-ico{width:50px;height:50px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:13px;display:flex;align-items:center;justify-content:center;}
+.lbrand-ico svg{width:24px;height:24px;stroke:white;stroke-width:2;fill:none;}
+.lbrand-text h1{font-family:'Playfair Display',serif;font-size:18px;color:white;line-height:1.2;}
+.lbrand-text p{font-size:10.5px;color:rgba(255,255,255,.5);margin-top:3px;letter-spacing:.6px;text-transform:uppercase;}
+.lsep{height:1px;background:rgba(255,255,255,.12);margin-bottom:24px;}
+.ltitle{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.55);letter-spacing:.8px;text-transform:uppercase;margin-bottom:18px;}
+.lfield{margin-bottom:14px;}
+.lfield label{display:block;font-size:10.5px;font-weight:600;color:rgba(255,255,255,.45);margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase;}
+.lfield input{width:100%;padding:11px 13px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:9px;font-size:13px;font-family:'DM Sans',sans-serif;color:white;outline:none;transition:all .2s;}
+.lfield input::placeholder{color:rgba(255,255,255,.25);}
+.lfield input:focus{border-color:rgba(255,255,255,.45);background:rgba(255,255,255,.13);}
+.lfield input.mono{font-family:'DM Mono',monospace;font-size:12px;}
+.lbtn{width:100%;padding:13px;background:white;color:var(--navy);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;transition:all .2s;}
+.lbtn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.25);}
+.lerr{background:rgba(239,68,68,.18);color:#fecaca;border:1px solid rgba(239,68,68,.3);border-radius:9px;padding:9px 13px;font-size:12px;margin-top:10px;display:none;}
+.lnote{font-size:11px;color:rgba(255,255,255,.3);margin-top:13px;text-align:center;line-height:1.7;}
+.lnote a{color:rgba(255,255,255,.55);}
+
+/* ── HEADER ── */
+.hdr{background:var(--navy);height:56px;padding:0 16px;display:flex;align-items:center;gap:11px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.07);}
+.hdr-logo{width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--blue3));border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hdr-logo svg{width:17px;height:17px;stroke:white;stroke-width:2;fill:none;}
+.hdr-t{flex:1;min-width:0;}
+.hdr-t h1{font-family:'Playfair Display',serif;color:white;font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hdr-t p{color:rgba(255,255,255,.3);font-size:9.5px;letter-spacing:.4px;display:none;}
+@media(min-width:500px){.hdr-t p{display:block;}}
+.hdr-tabs{display:flex;gap:2px;background:rgba(255,255,255,.07);border-radius:8px;padding:3px;flex-shrink:0;}
+.htab{padding:4px 11px;border-radius:6px;font-size:11px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s;color:rgba(255,255,255,.45);white-space:nowrap;}
+.htab.active{background:white;color:var(--navy);font-weight:700;}
+.htab:not(.active):hover{color:rgba(255,255,255,.85);}
+.op-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.13);border-radius:20px;padding:3px 9px 3px 3px;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.op-pill:hover{background:rgba(255,255,255,.15);}
+.op-av{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);font-size:8.5px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.op-name{font-size:11px;color:rgba(255,255,255,.75);font-weight:500;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.role-bdg{font-size:8.5px;color:#fbbf24;margin-left:1px;}
+.mob-btn{display:none;background:none;border:none;color:white;cursor:pointer;padding:4px;}
+@media(max-width:700px){.mob-btn{display:flex;}}
+
+/* ── LAYOUT ── */
+.main{display:flex;flex:1;overflow:hidden;}
+
+/* ── SIDEBAR ── */
+.sb{width:205px;background:var(--card);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;}
+@media(max-width:700px){
+  .sb{position:fixed;left:-210px;top:0;bottom:0;z-index:600;transition:left .28s;box-shadow:none;}
+  .sb.open{left:0;box-shadow:var(--sh-lg);}
+}
+.sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;}
+.sb-ov.show{display:block;}
+.sb-hd{padding:13px 11px 9px;border-bottom:1px solid var(--border);}
+.sb-lbl{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted2);margin-bottom:4px;}
+.sb-ttl{font-size:12px;font-weight:600;color:var(--text);}
+.sb-nav{padding:7px 5px;flex:1;}
+.sl{font-size:8.5px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;padding:0 5px;margin:9px 0 3px;display:flex;align-items:center;gap:5px;}
+.sl::before{content:"";flex:1;height:1px;background:var(--border);}
+.si{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:11px;color:var(--muted);border:none;background:none;width:100%;text-align:left;transition:all .12s;}
+.si:hover{background:var(--bg);color:var(--text);}
+.sc{font-family:'DM Mono',monospace;font-size:7.5px;font-weight:600;background:#e4edfc;color:var(--blue);padding:2px 5px;border-radius:4px;flex-shrink:0;}
+.sb-eval{padding:9px 5px 7px;border-top:1px solid var(--border);}
+.sb-ev-lbl{font-size:9px;font-weight:700;color:var(--muted2);letter-spacing:.5px;text-transform:uppercase;padding:0 5px;margin-bottom:4px;}
+.ev-si{display:flex;align-items:center;gap:6px;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:11px;color:var(--muted);border:1px solid transparent;background:none;width:100%;text-align:left;transition:all .12s;font-family:'DM Sans',sans-serif;}
+.ev-si:hover{background:var(--wn-bg);color:var(--wn);border-color:var(--wn-border);}
+.ev-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.ev-dot.mnt{background:#8b5cf6;}.ev-dot.reg{background:var(--blue);}.ev-dot.rou{background:var(--emerald);}.ev-dot.dem{background:var(--amber);}.ev-dot.all{background:var(--gold);}
+
+/* ── PANELS ── */
+.panel{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.panel.active{display:flex;}
+
+/* ── MODE BAR ── */
+.mode-bar{padding:8px 13px;border-bottom:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:7px;flex-wrap:wrap;}
+.mode-tgl{display:flex;gap:2px;background:var(--bg);border-radius:8px;padding:2px;}
+.mtab{padding:5px 12px;border-radius:6px;font-size:11px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s;color:var(--muted);background:transparent;}
+.mtab.active{background:var(--card);color:var(--text);box-shadow:var(--sh);font-weight:700;}
+.chips{display:flex;gap:4px;flex-wrap:wrap;}
+.chip{padding:4px 9px;border-radius:20px;font-size:10.5px;border:1px solid var(--border2);background:white;cursor:pointer;color:var(--muted);transition:all .12s;white-space:nowrap;}
+.chip:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light);}
+.bar-actions{display:flex;gap:5px;align-items:center;}
+.btn-sm{font-size:11px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:7px;padding:4px 10px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .12s;white-space:nowrap;}
+.btn-sm:hover{color:var(--blue);border-color:var(--blue);}
+.btn-sm.test{border-color:var(--blue);color:var(--blue);}
+.status-dot{display:inline-flex;align-items:center;gap:5px;font-size:10px;padding:3px 9px;border-radius:20px;font-family:'DM Mono',monospace;}
+.status-dot.ok{background:var(--ok-bg);color:var(--ok);}
+.status-dot.wn{background:var(--wn-bg);color:var(--wn);}
+.status-dot.er{background:var(--er-bg);color:var(--er);}
+.sd{width:5px;height:5px;border-radius:50%;background:currentColor;}
+
+/* ── EVAL BANNER ── */
+.ev-ban{background:linear-gradient(90deg,#fffbeb,#fff7ed);border-bottom:2px solid var(--wn-border);padding:8px 15px;display:none;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap;}
+.ev-ban.show{display:flex;}
+.ev-ban-info{font-size:11.5px;color:#92400e;font-weight:600;flex:1;}
+.ev-prog{width:110px;height:5px;background:#fde68a;border-radius:3px;overflow:hidden;}
+.ev-prog-fill{height:100%;background:linear-gradient(90deg,var(--wn),var(--gold));border-radius:3px;transition:width .5s;}
+.ev-prog-lbl{font-size:10.5px;font-weight:700;color:var(--wn);font-family:'DM Mono',monospace;}
+
+/* ── MESSAGES ── */
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:11px;}
+.msg{display:flex;gap:8px;align-items:flex-start;animation:fs .2s ease;}
+.msg.user{flex-direction:row-reverse;}
+@keyframes fs{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;flex-shrink:0;font-family:'DM Mono',monospace;}
+.av.ag{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;}
+.av.us{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);}
+.bbl{max-width:83%;padding:10px 13px;border-radius:13px;font-size:13px;line-height:1.75;}
+.msg.ag .bbl{background:var(--card);border:1px solid var(--border);border-bottom-left-radius:3px;box-shadow:var(--sh);}
+.msg.user .bbl{background:linear-gradient(135deg,var(--navy2),var(--navy3));color:white;border-bottom-right-radius:3px;}
+.tw{display:flex;gap:8px;align-items:flex-start;}
+.ty{padding:10px 13px;background:var(--card);border:1px solid var(--border);border-radius:13px;border-bottom-left-radius:3px;display:flex;gap:4px;align-items:center;box-shadow:var(--sh);}
+.ty span{width:5px;height:5px;border-radius:50%;background:var(--muted2);animation:bb 1.2s infinite;}
+.ty span:nth-child(2){animation-delay:.2s;}.ty span:nth-child(3){animation-delay:.4s;}
+@keyframes bb{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+
+/* ── INPUT ── */
+.ia{padding:9px 13px;border-top:1px solid var(--border);background:var(--card);display:flex;gap:7px;align-items:flex-end;flex-shrink:0;}
+textarea{flex:1;resize:none;border:1.5px solid var(--border2);border-radius:9px;padding:9px 11px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:38px;max-height:88px;line-height:1.5;outline:none;transition:all .15s;}
+textarea:focus{border-color:var(--blue);background:white;}
+.sbtn{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--navy),var(--blue));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 3px 10px rgba(30,111,217,.28);transition:all .15s;}
+.sbtn:hover{transform:translateY(-1px);}
+.sbtn:disabled{opacity:.35;cursor:default;transform:none;box-shadow:none;}
+.sbtn svg{width:14px;height:14px;}
+
+/* ── STATUS BAR ── */
+.stb{padding:4px 15px;background:var(--card2);border-top:1px solid var(--border);display:flex;gap:12px;align-items:center;flex-shrink:0;flex-wrap:wrap;}
+.st{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted);}
+.st strong{color:var(--blue);font-family:'DM Mono',monospace;font-size:10px;}
+.ctx-lbl{font-size:9px;color:var(--muted2);margin-left:auto;font-family:'DM Mono',monospace;}
+
+/* ── QCM ── */
+.qcm-card{background:var(--card);border:1px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:var(--sh);min-width:250px;max-width:470px;width:100%;}
+.qcm-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 13px 7px;}
+.qcm-badge{font-size:9.5px;font-weight:700;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:20px;}
+.qcm-num{font-size:10px;font-weight:600;color:var(--muted);font-family:'DM Mono',monospace;}
+.qcm-q{padding:0 13px 11px;font-size:12.5px;font-weight:600;color:var(--text);line-height:1.6;}
+.qcm-opts{display:flex;flex-direction:column;border-top:1px solid var(--border);}
+.qcm-btn{display:flex;align-items:center;gap:9px;padding:10px 13px;background:white;border:none;border-bottom:1px solid var(--border);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;font-size:12px;text-align:left;border-left:3px solid transparent;}
+.qcm-btn:last-child{border-bottom:none;}
+.qcm-btn:hover:not(:disabled){background:#f4f8ff;}
+.qcm-btn:disabled{cursor:default;}
+.qcm-ltr{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;font-family:'DM Mono',monospace;flex-shrink:0;transition:all .2s;}
+.qcm-txt{flex:1;line-height:1.45;}
+.qcm-fb{padding:10px 13px;font-size:11.5px;line-height:1.6;border-top:1px solid var(--border);}
+.qcm-fb.ok{background:#d1fae5;color:#065f46;}
+.qcm-fb.er{background:#fee2e2;color:#7f1d1d;}
+
+/* ── BILAN ── */
+.bilan{background:linear-gradient(135deg,var(--navy2),var(--navy3));border-radius:13px;padding:17px;color:white;}
+.bilan-ttl{font-family:'Playfair Display',serif;font-size:16px;margin-bottom:10px;}
+.bilan-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1);}
+.bilan-row:last-child{border-bottom:none;}
+.bilan-lbl{font-size:11px;color:rgba(255,255,255,.55);}
+.bilan-val{font-size:12.5px;font-weight:600;font-family:'DM Mono',monospace;}
+.bilan-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:10px;}
+.bilan-cat{background:rgba(255,255,255,.07);border-radius:8px;padding:8px;text-align:center;}
+.bilan-cat-dot{width:6px;height:6px;border-radius:50%;margin:0 auto 4px;}
+.bilan-cat-name{font-size:9.5px;color:rgba(255,255,255,.5);margin-bottom:2px;}
+.bilan-cat-sc{font-family:'DM Mono',monospace;font-size:14px;font-weight:600;}
+
+/* ── SUPERVISION ── */
+.sup-wrap{flex:1;overflow-y:auto;padding:16px;}
+.sup-hdr{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;border-radius:13px;padding:18px 20px;margin-bottom:16px;}
+.sup-hdr h2{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:5px;}
+.sup-hdr p{font-size:12px;opacity:.72;line-height:1.6;}
+.sup-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin-bottom:16px;}
+.sup-card{background:var(--card);border:1px solid var(--border);border-left:4px solid;border-radius:var(--r);padding:13px;box-shadow:var(--sh);}
+.sup-card h4{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:7px;}
+.sup-card ul{list-style:none;display:flex;flex-direction:column;gap:3px;}
+.sup-card ul li{font-size:11px;color:var(--text);display:flex;align-items:flex-start;gap:5px;}
+.sup-card ul li::before{content:"›";color:var(--blue);flex-shrink:0;}
+.def-table{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px;box-shadow:var(--sh);overflow-x:auto;}
+.def-table table{width:100%;border-collapse:collapse;font-size:11.5px;min-width:440px;}
+.def-table th{background:var(--navy);color:rgba(255,255,255,.65);padding:8px 11px;text-align:left;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+.def-table td{padding:8px 11px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5;}
+.def-table tr:last-child td{border-bottom:none;}
+.def-table tr:hover td{background:var(--bg);}
+.dbadge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:9.5px;font-weight:700;font-family:'DM Mono',monospace;}
+.db-r{background:var(--er-bg);color:var(--er);}
+.db-o{background:var(--wn-bg);color:var(--wn);}
+.db-b{background:var(--blue-light);color:var(--blue);}
+
+/* ── DASHBOARD ── */
+.dash-wrap{flex:1;overflow-y:auto;padding:16px;}
+.dash-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:9px;}
+.dash-top h2{font-family:'Playfair Display',serif;font-size:17px;color:var(--navy);}
+.dash-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.dbtn{padding:5px 11px;border-radius:8px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--border2);background:white;color:var(--muted);transition:all .12s;font-weight:500;}
+.dbtn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light);}
+.dbtn.danger:hover{border-color:var(--er);color:var(--er);background:var(--er-bg);}
+.dbtn.pdf{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;border:none;font-weight:600;}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:9px;margin-bottom:16px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:13px 14px;box-shadow:var(--sh);}
+.stat-val{font-family:'Playfair Display',serif;font-size:26px;color:var(--navy);}
+.stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;font-weight:500;}
+.stat-card.ok-b{border-top:3px solid var(--ok);}
+.stat-card.wn-b{border-top:3px solid var(--wn);}
+.stat-card.bl-b{border-top:3px solid var(--blue);}
+
+/* Ranking table */
+.rk-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);overflow-x:auto;margin-bottom:16px;}
+.rk-table{width:100%;border-collapse:collapse;min-width:560px;}
+.rk-table thead th{background:var(--navy);padding:10px 13px;text-align:left;font-size:9.5px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.06em;}
+.rk-table thead th.c{text-align:center;}
+.rk-table tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+.rk-table tbody tr:last-child{border-bottom:none;}
+.rk-table tbody tr:hover{background:#f4f8ff;}
+.rk-table td{padding:11px 13px;vertical-align:middle;}
+.rk-table td.c{text-align:center;}
+.rk-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rk-name{font-weight:700;font-size:12.5px;}
+.rk-sub{font-size:10px;color:var(--muted);}
+.score-pill{display:inline-flex;align-items:center;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;}
+.score-pill.ok{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-border);}
+.score-pill.wn{background:var(--wn-bg);color:var(--wn);border:1px solid var(--wn-border);}
+.score-pill.er{background:var(--er-bg);color:var(--er);border:1px solid var(--er-border);}
+.gamme-bar{display:flex;align-items:center;gap:4px;}
+.gamme-b-wrap{flex:1;height:5px;background:var(--bg);border-radius:3px;overflow:hidden;min-width:34px;}
+.gamme-b-fill{height:100%;border-radius:3px;}
+.gamme-sc{font-size:9.5px;font-weight:700;font-family:'DM Mono',monospace;width:30px;text-align:right;}
+
+/* Sessions list */
+.sess-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.ss-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .15s;}
+.ss-card:hover{box-shadow:var(--sh-lg);}
+.ss-hdr{padding:11px 13px;display:flex;align-items:center;gap:8px;cursor:pointer;flex-wrap:wrap;}
+.ss-hdr:hover{background:var(--bg);}
+.ss-op{font-weight:600;font-size:12px;flex:1;display:flex;align-items:center;gap:7px;min-width:100px;}
+.ss-meta{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;}
+.ss-sc{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;font-family:'DM Mono',monospace;}
+.ss-sc.ok{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-border);}
+.ss-sc.wn{background:var(--wn-bg);color:var(--wn);border:1px solid var(--wn-border);}
+.ss-sc.er{background:var(--er-bg);color:var(--er);border:1px solid var(--er-border);}
+.ss-body{border-top:1px solid var(--border);padding:13px;display:none;background:var(--card2);}
+.ss-body.open{display:block;}
+.qa-row{display:flex;gap:9px;margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid var(--border);}
+.qa-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.qa-n{width:20px;height:20px;border-radius:50%;background:#e4edfc;color:var(--blue);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.qa-c{flex:1;}
+.qa-q{font-size:11.5px;font-weight:600;margin-bottom:2px;color:var(--text);}
+.qa-a{font-size:11px;color:var(--muted);margin-bottom:3px;padding-left:8px;border-left:2px solid var(--border2);font-style:italic;}
+.qa-s{display:inline-flex;align-items:center;gap:3px;padding:1px 7px;border-radius:8px;font-size:10px;font-weight:600;font-family:'DM Mono',monospace;}
+.qa-s.ok{background:var(--ok-bg);color:var(--ok);}
+.qa-s.er{background:var(--er-bg);color:var(--er);}
+.empty{text-align:center;padding:36px 20px;color:var(--muted);font-size:12.5px;}
+
+/* Report btn */
+.rpt-wrap{text-align:center;padding:13px;border-top:1px solid var(--border);background:var(--card);}
+.rpt-btn{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;border:none;border-radius:9px;padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(30,111,217,.22);transition:all .2s;}
+.rpt-btn:hover{transform:translateY(-2px);}
+
+/* Manager overlay */
+.mgr-ov{display:none;position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px;}
+.mgr-ov.show{display:flex;}
+.mgr-box{background:white;border-radius:16px;padding:28px;width:340px;max-width:100%;}
+.mgr-box h3{font-family:'Playfair Display',serif;font-size:17px;color:var(--navy);margin-bottom:5px;}
+.mgr-box p{font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.6;}
+.mgr-box input{width:100%;padding:10px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:12.5px;font-family:'DM Mono',monospace;outline:none;margin-bottom:10px;transition:border .15s;}
+.mgr-box input:focus{border-color:var(--blue);}
+.mgr-btns{display:flex;gap:7px;}
+.mgr-btn{flex:1;padding:9px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
+.mgr-btn.pr{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;}
+.mgr-btn.se{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+
+/* No-access */
+.no-acc{text-align:center;padding:52px 20px;}
+
+/* DB sync indicator */
+.db-banner{background:#f0fdf4;border:1px solid var(--ok-border);border-radius:9px;padding:9px 13px;margin-bottom:14px;font-size:11.5px;color:var(--ok);display:flex;align-items:center;gap:8px;}
+.db-banner.err{background:var(--er-bg);border-color:var(--er-border);color:var(--er);}
+.db-banner.wn{background:var(--wn-bg);border-color:var(--wn-border);color:var(--wn);}
+
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px;}
+.sec-title{font-size:10.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.sec-title::after{content:"";flex:1;height:1px;background:var(--border);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="lgeo"></div>
+  <div class="lcard">
+    <div class="lbrand">
+      <div class="lbrand-ico">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="lbrand-text">
+        <h1>Agent Technique BRIO</h1>
+        <p>Amcor Flexibles Mohammedia</p>
+      </div>
+    </div>
+    <div class="lsep"></div>
+    <div class="ltitle">Connexion opérateur</div>
+    <div class="lfield">
+      <label>Nom de l'opérateur</label>
+      <input type="text" id="loginName" placeholder="Ex: Ahmed Benali" autocomplete="off"/>
+    </div>
+    <div class="lfield">
+      <label>Clé API Groq · <a href="https://console.groq.com" target="_blank" style="color:rgba(255,255,255,.6)">console.groq.com</a></label>
+      <input type="password" id="loginKey" class="mono" placeholder="gsk_xxxxxxxxxxxxxxxxxxxxxxxx"/>
+    </div>
+    <button class="lbtn" onclick="login()">Accéder à l'agent →</button>
+    <div class="lerr" id="loginError"></div>
+    <div class="lnote">Clé gratuite sur <a href="https://console.groq.com" target="_blank">console.groq.com</a> → API Keys</div>
+  </div>
+</div>
+
+<!-- MANAGER OVERLAY -->
+<div class="mgr-ov" id="mgrOv">
+  <div class="mgr-box">
+    <h3>🔐 Accès Manager</h3>
+    <p>Entrez le code manager pour accéder au tableau de bord complet avec l'historique de tous les opérateurs.</p>
+    <input type="password" id="mgrInput" placeholder="Code Manager" class="mono" onkeydown="if(event.key==='Enter')checkMgr()"/>
+    <div id="mgrErr" style="color:var(--er);font-size:11.5px;margin-bottom:9px;display:none;">Code incorrect.</div>
+    <div class="mgr-btns">
+      <button class="mgr-btn se" onclick="closeMgrOv()">Annuler</button>
+      <button class="mgr-btn pr" onclick="checkMgr()">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <button class="mob-btn" onclick="openSb()">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="hdr-logo">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+  </div>
+  <div class="hdr-t"><h1>Agent BRIO</h1><p>Amcor Flexibles Mohammedia</p></div>
+  <div class="hdr-tabs">
+    <button class="htab active" onclick="switchTab('chat')">Assistant</button>
+    <button class="htab" onclick="switchTab('sup')">Supervision</button>
+    <button class="htab" onclick="handleDashTab()">Éval.</button>
+  </div>
+  <div class="op-pill" onclick="logout()" title="Changer d'opérateur" style="margin-left:5px;">
+    <div class="op-av" id="opAv">?</div>
+    <span class="op-name" id="opNm">—</span>
+    <span id="roleBdg" class="role-bdg"></span>
+  </div>
+</div>
+
+<div class="main">
+  <!-- SIDEBAR -->
+  <div class="sb" id="sidebar">
+    <div class="sb-hd"><div class="sb-lbl">Gammes opératoires</div><div class="sb-ttl">BRIO · Procédures</div></div>
+    <div class="sb-nav">
+      <div class="sl">I · Montage</div>
+      <button class="si" onclick="ask('MNT-01');closeSb()"><span class="sc">MNT-01</span>Cylindre / arbre</button>
+      <button class="si" onclick="ask('MNT-02');closeSb()"><span class="sc">MNT-02</span>Cylindre / chariot</button>
+      <button class="si" onclick="ask('MNT-03');closeSb()"><span class="sc">MNT-03</span>Bobine</button>
+      <button class="si" onclick="ask('MNT-04');closeSb()"><span class="sc">MNT-04</span>Passage support</button>
+      <div class="sl">II · Réglage</div>
+      <button class="si" onclick="ask('REG-01');closeSb()"><span class="sc">REG-01</span>Réglage manuel</button>
+      <button class="si" onclick="ask('REG-02');closeSb()"><span class="sc">REG-02</span>Réglage auto</button>
+      <button class="si" onclick="ask('REG-03');closeSb()"><span class="sc">REG-03</span>Viscosité AFNOR</button>
+      <div class="sl">III · Roulage</div>
+      <button class="si" onclick="ask('ROU-01');closeSb()"><span class="sc">ROU-01</span>Embarquement</button>
+      <button class="si" onclick="ask('ROU-02');closeSb()"><span class="sc">ROU-02</span>Supervision</button>
+      <button class="si" onclick="ask('ROU-03');closeSb()"><span class="sc">ROU-03</span>Qualité & Sécurité</button>
+      <div class="sl">IV · Démontage</div>
+      <button class="si" onclick="ask('DEM-01');closeSb()"><span class="sc">DEM-01</span>Cylindre / chariot</button>
+      <button class="si" onclick="ask('DEM-02');closeSb()"><span class="sc">DEM-02</span>Cylindre / arbre</button>
+      <button class="si" onclick="ask('DEM-03');closeSb()"><span class="sc">DEM-03</span>Bobine</button>
+    </div>
+    <div class="sb-eval">
+      <div class="sb-ev-lbl">Évaluation certifiante</div>
+      <button class="ev-si" onclick="evalMode('Montage','MNT');closeSb()"><span class="ev-dot mnt"></span>Montage (10 Q)</button>
+      <button class="ev-si" onclick="evalMode('Réglage','REG');closeSb()"><span class="ev-dot reg"></span>Réglage (13 Q)</button>
+      <button class="ev-si" onclick="evalMode('Roulage','ROU');closeSb()"><span class="ev-dot rou"></span>Roulage (11 Q)</button>
+      <button class="ev-si" onclick="evalMode('Démontage','DEM');closeSb()"><span class="ev-dot dem"></span>Démontage (6 Q)</button>
+      <button class="ev-si" onclick="evalMode('Complet','ALL');closeSb()"><span class="ev-dot all"></span>Complet (40 Q)</button>
+    </div>
+  </div>
+
+  <!-- CHAT PANEL -->
+  <div class="panel active" id="panelChat">
+    <div class="mode-bar">
+      <div class="mode-tgl">
+        <button class="mtab active" id="modeAssist" onclick="setMode('assist')">💬 Assistant</button>
+        <button class="mtab" id="modeEval" onclick="setMode('eval')">📝 Évaluateur</button>
+      </div>
+      <div class="chips" id="quickChips">
+        <span class="chip" onclick="sendQ('Quels EPI sont obligatoires sur la BRIO ?')">🦺 EPI</span>
+        <span class="chip" onclick="sendQ('Comment contrôler la viscosité avec la coupe AFNOR ?')">🧪 Viscosité</span>
+        <span class="chip" onclick="sendQ('Explique les règles de flux VF conducteur et cinématique')">↔ Flux VF</span>
+        <span class="chip" onclick="sendQ('Quelles sont les causes des traînées d\'impression ?')">🔴 Défauts</span>
+      </div>
+      <div class="bar-actions">
+        <span class="status-dot wn" id="apiStatus"><span class="sd"></span><span id="apiStatusTxt">Groq</span></span>
+        <button class="btn-sm test" onclick="testAPI()">🔌 Tester</button>
+        <button class="btn-sm" onclick="clearChat()">Effacer</button>
+      </div>
+    </div>
+    <div class="ev-ban" id="evBan">
+      <span style="font-size:14px;">📝</span>
+      <div class="ev-ban-info" id="evBanInfo">Mode évaluation</div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="ev-prog"><div class="ev-prog-fill" id="evProgFill" style="width:0%"></div></div>
+        <span class="ev-prog-lbl" id="evProgLbl">0/40</span>
+      </div>
+    </div>
+    <div class="msgs" id="msgs">
+      <div class="msg ag">
+        <div class="av ag">IA</div>
+        <div class="bbl"><strong>Bonjour ! Je suis l'Agent Technique BRIO</strong> — Amcor Flexibles Mohammedia.<br><br>
+        Je connais toutes les gammes opératoires BRIO : montage, réglage, roulage et démontage.<br><br>
+        Posez votre question ou cliquez sur une gamme dans le menu latéral.<br>
+        Lancez une évaluation certifiante depuis le menu ou les boutons ci-dessus.</div>
+      </div>
+    </div>
+    <div class="ia">
+      <textarea id="inp" placeholder="Posez votre question technique..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,88)+'px'"></textarea>
+      <button class="sbtn" id="sbtn" onclick="send()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+    <div class="stb">
+      <div class="st">Messages: <strong id="sM">0</strong></div>
+      <div class="st">Questions: <strong id="sQ">0</strong></div>
+      <div class="st">Score: <strong id="sS">—</strong></div>
+      <div class="ctx-lbl" id="ctxLbl"></div>
+    </div>
+  </div>
+
+  <!-- SUPERVISION PANEL -->
+  <div class="panel" id="panelSup">
+    <div class="sup-wrap">
+      <div class="sup-hdr">
+        <h2>🎯 Supervision Qualité BRIO-ROU-02</h2>
+        <p>Guide de surveillance continue, détection des défauts et actions correctives pour garantir la conformité qualité.</p>
+      </div>
+      <div class="sec-title">Surveillance permanente en production</div>
+      <div class="sup-grid">
+        <div class="sup-card" style="border-left-color:#8b5cf6;"><h4>📷 Caméra recto/verso</h4><ul><li>Décalage impression</li><li>Manque d'encre</li><li>Bavures, stries</li><li>Netteté des motifs</li></ul></div>
+        <div class="sup-card" style="border-left-color:var(--blue);"><h4>🧪 Encre & Viscosité</h4><ul><li>Teinte / densité optique</li><li>Contrôle AFNOR régulier</li><li>Niveau dans les cuves</li><li>Solvant retardateur max 3%</li></ul></div>
+        <div class="sup-card" style="border-left-color:var(--emerald);"><h4>📦 Support & Tension</h4><ul><li>Centrage bobine</li><li>Absence de plis</li><li>Tension dérouleur</li><li>Enroulement bobine finale</li></ul></div>
+        <div class="sup-card" style="border-left-color:var(--amber);"><h4>⚙️ Paramètres machine</h4><ul><li>Vitesse / pression</li><li>Séchage ±40°C cible</li><li>Va-et-vient racle</li><li>Bridage et mises à la terre</li></ul></div>
+      </div>
+      <div class="sec-title">Table des défauts — Causes & Remèdes</div>
+      <div class="def-table">
+        <table>
+          <thead><tr><th>Défaut</th><th>Cause principale</th><th>Action corrective</th><th>Criticité</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Décalage impression</strong></td><td>Arbre desserré / faux rond / bobine pochée</td><td>Resserrer arbre · Changer bobine · Vérifier synoptique</td><td><span class="dbadge db-r">CRITIQUE</span></td></tr>
+            <tr><td></td><td>Presseur gonflé solvants · Cellule repérage HS</td><td>Changer presseur · Changer tête cellule</td><td><span class="dbadge db-o">MOYEN</span></td></tr>
+            <tr><td><strong>Traînées impression</strong></td><td>Particules dans l'encre</td><td>Filtrer encres + changer accessoires</td><td><span class="dbadge db-r">CRITIQUE</span></td></tr>
+            <tr><td></td><td>Racle usée / cylindre rayé</td><td>Changer racle · Polir ou démonter</td><td><span class="dbadge db-o">MOYEN</span></td></tr>
+            <tr><td><strong>Pas d'impression</strong></td><td>Température ou vitesse incorrecte</td><td>Respecter synoptique</td><td><span class="dbadge db-r">CRITIQUE</span></td></tr>
+            <tr><td></td><td>Tension support incorrecte · Support humide</td><td>Ajuster tension · Préchauffe</td><td><span class="dbadge db-o">MOYEN</span></td></tr>
+            <tr><td><strong>Teinte non conforme</strong></td><td>Viscosité encre incorrecte</td><td>Mesure AFNOR + ajuster viscosité</td><td><span class="dbadge db-r">CRITIQUE</span></td></tr>
+            <tr><td></td><td>Formulation incorrecte · Encre siccative</td><td>Corriger / Appeler technicien / Ajouter retardateur max 3%</td><td><span class="dbadge db-r">CRITIQUE</span></td></tr>
+            <tr><td><strong>Mauvaise couverture</strong></td><td>Faible débit pompe · Angle racle élevé</td><td>Augmenter débit · Diminuer angle</td><td><span class="dbadge db-o">MOYEN</span></td></tr>
+            <tr><td><strong>Piquage</strong></td><td>Viscosité élevée · Encre siccative</td><td>Régler viscosimètre · Retardateur (max 3%)</td><td><span class="dbadge db-o">MOYEN</span></td></tr>
+            <tr><td><strong>Stries</strong></td><td>Serrage excessif racle · Anti-jets absents</td><td>Ajuster serrage · Monter anti-jets</td><td><span class="dbadge db-o">MOYEN</span></td></tr>
+            <tr><td><strong>Déchirure / coups cylindre</strong></td><td>Coups ou usure cylindre</td><td>Démonter et informer responsable</td><td><span class="dbadge db-r">CRITIQUE</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sec-title">Actions correctives rapides</div>
+      <div class="sup-grid" style="grid-template-columns:repeat(auto-fit,minmax(175px,1fr));">
+        <div class="sup-card" style="border-left-color:var(--er);"><h4>🔴 Écart de teinte</h4><ul><li>Mesurer viscosité AFNOR</li><li>Ajuster solvant/encre concentrée</li><li>Vérifier formulation vs OF</li><li>Appeler technicien si persistant</li></ul></div>
+        <div class="sup-card" style="border-left-color:var(--wn);"><h4>🟠 Problème repérage</h4><ul><li>Boutons latéral/longitudinal</li><li>Mode auto Eltromat</li><li>Vérifier arbre et bridage</li><li>Contrôler cellule repérage</li></ul></div>
+        <div class="sup-card" style="border-left-color:var(--emerald);"><h4>🟢 Dérive latérale</h4><ul><li>Ajuster guides latéraux</li><li>Vérifier centrage bobine</li><li>Contrôler tension support</li></ul></div>
+        <div class="sup-card" style="border-left-color:var(--blue);"><h4>🔵 Problème séchage</h4><ul><li>Vérifier température ±40°C</li><li>Ajuster vitesse machine</li><li>Maintenance si persistant</li></ul></div>
+      </div>
+      <div class="sec-title">⚠️ Protocole incident encre solvantée</div>
+      <div style="background:var(--er-bg);border:1px solid var(--er-border);border-radius:var(--r);padding:14px;margin-bottom:16px;">
+        <p style="font-size:12.5px;line-height:1.9;color:#7f1d1d;">
+          <strong>1.</strong> Arrêter immédiatement toutes les sources d'ignition<br>
+          <strong>2.</strong> Baliser la zone — interdire l'accès<br>
+          <strong>3.</strong> Utiliser les absorbants adaptés aux solvants<br>
+          <strong>4.</strong> Ventiler le local<br>
+          <strong>5.</strong> Informer responsable HSE et chef d'équipe<br>
+          <strong>6.</strong> Remplir le registre incident avant reprise
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD PANEL -->
+  <div class="panel" id="panelDash">
+    <div class="dash-wrap">
+      <div class="dash-top">
+        <h2>Tableau de bord des évaluations</h2>
+        <div class="dash-actions" id="dashActions"></div>
+      </div>
+      <div id="dbBanner"></div>
+      <div id="mgrOnly" style="display:none;">
+        <div class="stats-row" id="statsRow"></div>
+        <div class="sec-title">Classement des conducteurs — Score par gamme</div>
+        <div id="rankingWrap"></div>
+        <div class="sec-title" style="margin-top:18px;">Toutes les sessions — Conducteur · Phase · Date · Score</div>
+        <div id="sessionsTableWrap"></div>
+        <div class="sec-title" style="margin-top:18px;">Détail des réponses</div>
+        <div class="sess-list" id="sessionsEl"><div class="empty">Aucune session.</div></div>
+      </div>
+      <div id="noAcc" style="display:none;">
+        <div class="no-acc">
+          <div style="font-size:44px;margin-bottom:14px;">🔐</div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:19px;color:var(--navy);margin-bottom:9px;">Accès Manager requis</h3>
+          <p style="color:var(--muted);font-size:13px;max-width:300px;margin:0 auto 18px;line-height:1.7;">Le tableau de bord complet est réservé aux managers.</p>
+          <button onclick="openMgrOv()" style="background:linear-gradient(135deg,var(--navy),var(--blue));color:white;border:none;border-radius:9px;padding:11px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Entrer le code Manager</button>
+        </div>
+      </div>
+    </div>
+    <div class="rpt-wrap" id="rptWrap" style="display:none">
+      <button class="rpt-btn" onclick="generatePDF()">🖨️ Générer le rapport de certification PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================
+//  BASE DE CONNAISSANCES BRIO (compacte)
+// =====================================================
+const KB = {
+  "MNT-01":`BRIO-MNT-01 — MONTAGE CYLINDRE SUR ARBRE
+EPI: Lunettes, Gants, Bouchons d'oreilles
+Ordre montage: CÔNE → BAGUE → CLAVETTE → BOUT D'ARBRE
+Étapes: 1.Vérifier OF + sens Conducteur/Cinématique. 2.Insérer arbre (immobile). 3.Monter cône, bague, clavette, bout d'arbre. 4.Serrer au pistolet. 5.Insérer paliers.
+Flux VF — Conducteur: arbre inverse VF, accessoires même sens. Cinématique: arbre même sens, accessoires inverse.`,
+  "MNT-02":`BRIO-MNT-02 — MONTAGE CYLINDRE CHARIOT
+EPI: Lunettes, Gants, Bouchons, Gants anti-coupure (pour racle)
+Ordre: 1.Vérifier cylindre (coups/rayures/déchromage). 2.Installer racle (anti-coupure). 3.Bavettes + anti-jets propres. 4.Chariot en position. 5.Carters gris. 6.Bridage "chariot en". 7.Mise à terre. 8.Pompe + tuyau. 9.Serrer paliers (clé cliquet). 10.Va-et-vient A→B. 11.Embrayage. 12.Verser encre. 13.Pompe "encre en".`,
+  "MNT-03":`BRIO-MNT-03 — MONTAGE BOBINE
+EPI: Lunettes, Gants, Bouchons
+Étapes: 1.Desserrer paliers. 2.Dégonfler arbre expansible. 3.Placer bobine (vérifier flèche sens). 4.Gonfler arbre. 5.Vérifier rotation avant. 6.Serrer paliers. 7.Descendre fourchette. 8.Positionner déroulage. 9.Retirer 1ère couche. 10.Scotch double face sur paliers.`,
+  "MNT-04":`BRIO-MNT-04 — PASSAGE SUPPORT
+Triplex Pharma: vérifier sens, centrer bobine. Papier Levure: fragile → tension dérouleur 170 N MAX. Mixpap: pression débiteur 2-4 bars, tension 170 N, appel entrée 180 N.`,
+  "REG-01":`BRIO-REG-01 — RÉGLAGE MANUEL WIZCON
+Étapes: 1.Monter cylindres. 2.Ouvrir recette Wizcon → Éditer → Saisir températures + développement → Sauver (VERT). 3.Lec Recette (VERT) → Transférer (VERT). 4.Vérifier afficheurs pupitre. 5.Barbotage rapide. 6.Rotation lente. 7.Régler racle: presseur SANS contact avec bavette. 8.Mode démarrage → Marche machine. 9.Augmenter vitesse. 10.Impression "en" pour chaque bloc. 11.Séchage ±40°C. 12.Repérage latéral + longitudinal.`,
+  "REG-02":`BRIO-REG-02 — RÉGLAGE AUTO ELTROMAT
+Étapes: 1.Gestion tâches → Préparer. 2.Client/Tâche/Description → Enregistrer. 3.Formats: saisir développement OF. 4.Machine affectation: choisir blocs. 5.Caractéristiques: couleur par bloc. 6.Marque repère: Conducteur ou Cinématique. 7.Affectation groupe imp (par 20). 8.Marque référence. 9.Contrôle (SEL). 10.Vue d'ensemble. 11.Fonctions spéciales (tout cocher). 12.Chargement → Production.`,
+  "REG-03":`BRIO-REG-03 — VISCOSITÉ COUPE AFNOR
+Matériel: Coupe AFNOR propre/sèche, chronomètre, récipient, solvant, encre.
+Étapes: 1.Préparer matériel. 2.Remplir coupe à ras bord. 3.Positionner stable au-dessus récipient. 4.Retirer index → déclencher chrono → arrêter quand filet se rompt. 5.Comparer à référence OF. 6.Attendre Cal. 7.Mettre en service (bouton vert). 8.Saisir temps dans colonne rouge logiciel.
+Ajustements: temps élevé (trop visqueux) → ajouter solvant progressivement; temps faible (trop fluide) → ajouter encre neuve concentrée.
+Fréquence: au démarrage, après chaque appoint d'encre, périodiquement.`,
+  "ROU-01":`BRIO-ROU-01 — EMBARQUEMENT (CHANGEMENT BOBINE)
+EPI: Lunettes, Gants, Bouchons
+Étapes: 1.Monter nouvelle bobine sur branche 2 + centrer. 2.Réduire vitesse. 3.Bouton "Changement bobine". 4.Attendre activation 2 boutons branches. 5.Voyant VERT coupe → Engager presseur (contact cylindre) → Couper.
+Après coupe: vérifier stabilité, tension, enroulement.`,
+  "ROU-02":`BRIO-ROU-02 — SUPERVISION PRODUCTION
+Surveiller: caméra recto/verso, teinte/densité/viscosité, tension/centrage/plis, bobine finale, vitesse/pression/séchage.
+Actions correctives: écart teinte → ajuster viscosité; repérage → boutons lat/long ou Eltromat; dérive → guides latéraux; séchage → ajuster température.
+Défauts/causes/remèdes: voir tableau onglet Supervision.`,
+  "ROU-03":`BRIO-ROU-03 — QUALITÉ & SÉCURITÉ
+Qualité: prélever échantillons (démarrage, cours, fin), contrôler densité optique, vérifier conformité OF, consigner registre.
+Sécurité: EPI obligatoires à tout moment. Déversement encre solvantée: arrêter sources ignition, baliser, absorbants. Ne jamais mettre les mains dans les parties mobiles.`,
+  "DEM-01":`BRIO-DEM-01 — DÉMONTAGE CYLINDRE CHARIOT
+Étapes: 1.Réduire vitesse (-Vite). 2.Rotation lente. 3.Désactiver séchage. 4.Mode Préparation → Rodage. 5.Vider encre → descendre cuvette. 6.Arrêter pompe. 7.Lever racle SANS contact. 8.Nettoyer pistolet. 9.Arrêter machine. 10.Moteur pompe OFF. 11.Tuyaux viscosimètre. 12.Déposer mise à terre. 13.Libérer embrayage. 14.Va-et-vient A→B. 15.Ouvrir cylindre cinématique (clé cliquet). 16.Bridage "hors". 17.Retirer carters. 18.Chariot au centre. 19.Retirer racle (GANTS ANTI-COUPURE). 20.Anti-jets + bavettes + cylindre.`,
+  "DEM-02":`BRIO-DEM-02 — DÉMONTAGE CYLINDRE ARBRE
+Étapes: 1.Carton + prélever échantillon. 2.Retirer paliers. 3.Desserrer arbre (air). 4.Bout d'arbre → Clavette → Bague → Cône. 5.Retirer arbre.`,
+  "DEM-03":`BRIO-DEM-03 — DÉMONTAGE BOBINE
+Étapes: 1.Prélever 2 échantillons (qualité + conducteur). 2.Emballer bobine. 3.Desserrer paliers. 4.Déchargement fourchettes → fourchette descend. 5.Évacuer bobine vers stockage. 6.Installer nouveau mandrin. 7.Serrer paliers. 8.Gonfler arbre. 9.Scotch sur arbre.`
+};
+
+// =====================================================
+//  40 QUESTIONS QCM (options mélangées à l'affichage)
+// =====================================================
+const EVALS = [
+  {cat:"MNT",mod:"MNT-01",q:"Ordre de montage des composants sur l'arbre ?",opts:["Clavette→Bague→Cône","Cône→Bague→Clavette→Bout d'arbre","Bout→Clavette→Bague→Cône","Bague→Cône→Bout"],c:1,exp:"Ordre officiel : Cône → Bague → Clavette → Bout d'arbre (BRIO-MNT-01)."},
+  {cat:"MNT",mod:"MNT-01",q:"Mode Conducteur — sens des accessoires par rapport au VF ?",opts:["Inverse du VF","Même sens que le VF","Perpendiculaire","Indifférent"],c:1,exp:"Accessoires dans le même sens VF (arbre en inverse)."},
+  {cat:"MNT",mod:"MNT-01",q:"Cylindre instable après serrage — que faire ?",opts:["Recommencer","Ajouter rondelle et resserrer","Forcer","Changer cylindre"],c:1,exp:"Ajouter une rondelle puis resserrer au pistolet."},
+  {cat:"MNT",mod:"MNT-02",q:"Que vérifier sur le cylindre avant montage chariot ?",opts:["Couleur","Coups, rayures, déchromage","Poids","Température"],c:1,exp:"Vérifier l'état de surface : coups, rayures, déchromage."},
+  {cat:"MNT",mod:"MNT-02",q:"Pourquoi la mise à la terre lors du montage ?",opts:["Alimenter la pompe","Évacuer électricité statique et prévenir incendies","Bloquer le chariot","Activer ventilation"],c:1,exp:"La mise à la terre dissipe l'électricité statique — risque d'incendie."},
+  {cat:"MNT",mod:"MNT-02",q:"Condition requise pour les anti-jets ?",opts:["Peints en couleur sécurité","Toujours propres, sans résidus","En plastique","Peu importe"],c:1,exp:"Les anti-jets doivent toujours être propres et sans résidus."},
+  {cat:"MNT",mod:"MNT-02",q:"Étape immédiatement après 'Bridage chariot en' ?",opts:["Serrer paliers","Mise à la terre","Installer pompe","Va-et-vient"],c:1,exp:"Après bridage → mise à la terre (BRIO-MNT-02)."},
+  {cat:"MNT",mod:"MNT-03",q:"Avant de placer la bobine sur l'arbre ?",opts:["Gonfler","Dégonfler","Serrer paliers","Retirer fourchettes"],c:1,exp:"Dégonfler l'arbre expansible pour insérer la bobine."},
+  {cat:"MNT",mod:"MNT-03",q:"Après avoir gonflé l'arbre — étape suivante ?",opts:["Serrer paliers","Descendre fourchette","Retirer 1ère couche","Lancer déroulage"],c:0,exp:"Serrer les paliers pour maintenir la bobine en place."},
+  {cat:"MNT",mod:"MNT-04",q:"Tension dérouleur pour Papier Levure ?",opts:["100 N","150 N","170 N","200 N"],c:2,exp:"170 N maximum — support fragile (BRIO-MNT-04)."},
+  {cat:"REG",mod:"REG-01",q:"Logiciel utilisé pour le réglage manuel ?",opts:["Eltromat","Wizcon","SAP","AutoCAD"],c:1,exp:"Wizcon pour le réglage manuel, Eltromat pour l'auto."},
+  {cat:"REG",mod:"REG-01",q:"Couleur de validation dans Wizcon ?",opts:["Rouge","Vert","Bleu","Jaune"],c:1,exp:"Le bouton VERT confirme la validation."},
+  {cat:"REG",mod:"REG-01",q:"Réglage racle — position du presseur ?",opts:["En contact avec bavette","SANS contact avec bavette","Racle relevée","Indifférent"],c:1,exp:"Presseur SANS contact avec la bavette."},
+  {cat:"REG",mod:"REG-01",q:"Tolérance de température lors du séchage ?",opts:["±10°C","±40°C","±5°C","Exacte"],c:1,exp:"Vérification séchage à ±40°C par rapport à la cible."},
+  {cat:"REG",mod:"REG-01",q:"Première action après montage cylindres (REG-01) ?",opts:["Démarrer machine","Ouvrir recette Wizcon","Lancer barbotage","Régler racle"],c:1,exp:"Ouvrir la recette dans Wizcon, éditer, saisir paramètres."},
+  {cat:"REG",mod:"REG-02",q:"Première étape réglage automatique Eltromat ?",opts:["Formats","Gestion tâches → Préparer","Machine affectation","Caractéristiques"],c:1,exp:"Gestion des tâches → sélectionner tâche → Préparer."},
+  {cat:"REG",mod:"REG-02",q:"Champs obligatoires dans Données des tâches ?",opts:["Vitesse, température","Client, Tâche, Description","Développement, laize","Matricule, date"],c:1,exp:"Client, Tâche et Description → Enregistrer."},
+  {cat:"REG",mod:"REG-02",q:"Valeur à saisir dans Formats Eltromat ?",opts:["Vitesse cible","Développement OF","Nombre de bobines","Tension support"],c:1,exp:"Le développement (périmètre cylindre) de l'Ordre de Fabrication."},
+  {cat:"REG",mod:"REG-02",q:"Dernière action Eltromat avant production ?",opts:["Chargement → Production","Vérifier couleurs","Affectation par 20","Vue d'ensemble"],c:0,exp:"Gestion tâches → Chargement → Production."},
+  {cat:"REG",mod:"REG-03",q:"Quand arrêter le chronomètre (test AFNOR) ?",opts:["Coupe vide","Filet se rompt","À 20 secondes","À moitié"],c:1,exp:"On arrête dès que le filet d'encre se rompt."},
+  {cat:"REG",mod:"REG-03",q:"Viscosité trop faible (encre trop fluide) → action ?",opts:["Ajouter solvant","Ajouter encre neuve concentrée","Ajouter eau","Augmenter vitesse"],c:1,exp:"Ajouter de l'encre neuve concentrée pour remonter la viscosité."},
+  {cat:"REG",mod:"REG-03",q:"Viscosité trop élevée (encre trop visqueuse) → action ?",opts:["Changer le bac","Ajouter solvant progressivement","Refroidir","Augmenter pression"],c:1,exp:"Ajouter du solvant progressivement via le système auto."},
+  {cat:"REG",mod:"REG-03",q:"Fréquence de contrôle de la viscosité ?",opts:["1 fois/jour","Démarrage + chaque appoint + périodique","Fin tirage","Toutes 4h"],c:1,exp:"Au démarrage, après chaque appoint d'encre/solvant, et périodiquement."},
+  {cat:"ROU",mod:"ROU-01",q:"Sur quelle branche monter la nouvelle bobine ?",opts:["Branche 1","Branche 2","Branche 3","N'importe laquelle"],c:1,exp:"Toujours sur la branche 2."},
+  {cat:"ROU",mod:"ROU-01",q:"Couleur du voyant pour autoriser la coupe ?",opts:["Rouge","Vert","Bleu","Orange"],c:1,exp:"Le voyant VERT confirme que la coupe est autorisée."},
+  {cat:"ROU",mod:"ROU-01",q:"Que vérifier après la coupe ?",opts:["Vitesse","Stabilité, tension, enroulement bobine","Couleur encre","Niveau encre"],c:1,exp:"Vérifier stabilité bobine, tension correcte, enroulement propre."},
+  {cat:"ROU",mod:"ROU-01",q:"Comment assurer le transfert sans arrêt ?",opts:["Huile","Ruban adhésif sur arbre (friction)","Augmenter vitesse","Mandrin plus large"],c:1,exp:"Le ruban adhésif augmente la friction et évite le glissement."},
+  {cat:"ROU",mod:"ROU-02",q:"Action corrective pour un écart de teinte ?",opts:["Augmenter vitesse","Ajuster viscosité encre","Changer cylindre","Redémarrer"],c:1,exp:"Ajuster la viscosité — cause principale des écarts de teinte."},
+  {cat:"ROU",mod:"ROU-02",q:"Correction d'une dérive latérale ?",opts:["Angle racle","Guides latéraux","Viscosité","Vitesse dérouleur"],c:1,exp:"Les guides latéraux corrigent la trajectoire transversale."},
+  {cat:"ROU",mod:"ROU-02",q:"Correction d'un problème de repérage ?",opts:["Tension support","Boutons latéral/longitudinal ou mode auto Eltromat","Déplacer chariot","Vitesse machine"],c:1,exp:"Via boutons lat/long (manuel) ou automatiquement via Eltromat."},
+  {cat:"ROU",mod:"ROU-02",q:"Éléments à surveiller en permanence ?",opts:["Vitesse uniquement","Caméra, teinte, viscosité, tension, centrage, séchage","Pression uniquement","Niveau encre"],c:1,exp:"Caméra recto/verso, teinte/densité/viscosité, tension/centrage, bobine, vitesse/séchage."},
+  {cat:"ROU",mod:"ROU-03",q:"Déversement encre solvantée — action prioritaire ?",opts:["Continuer et nettoyer après","Arrêter sources ignition, baliser, absorbants","Ouvrir les fenêtres","Appeler maintenance"],c:1,exp:"Risque incendie immédiat : arrêter sources ignition, baliser, absorbants."},
+  {cat:"ROU",mod:"ROU-03",q:"Responsabilité de la sécurité au poste ?",opts:["HSE uniquement","Maintenance uniquement","Chaque opérateur — conducteur en premier","Direction uniquement"],c:2,exp:"Responsabilité partagée, chaque opérateur est garant de sa sécurité."},
+  {cat:"ROU",mod:"ROU-03",q:"Nombre d'échantillons au déchargement bobine ?",opts:["1 seul","3","2 — qualité + conducteur","Aucun"],c:2,exp:"2 échantillons : un pour le service qualité, un pour le conducteur."},
+  {cat:"DEM",mod:"DEM-01",q:"Première action — démontage cylindre chariot ?",opts:["Arrêter machine","Réduire vitesse (-Vite)","Vider encre","Lever racle"],c:1,exp:"Première étape : réduire la vitesse (-Vite)."},
+  {cat:"DEM",mod:"DEM-01",q:"Comment lever la racle lors du démontage ?",opts:["En contact cuvette","SANS contact avec aucun élément","En appui bavette","Rapidement"],c:1,exp:"La racle doit être levée SANS contact avec aucun élément."},
+  {cat:"DEM",mod:"DEM-01",q:"EPI obligatoire pour retirer la racle ?",opts:["Lunettes","Gants anti-coupure OBLIGATOIRES","Masque","Rien"],c:1,exp:"Gants anti-coupure obligatoires pour tout contact avec la racle."},
+  {cat:"DEM",mod:"DEM-02",q:"Ordre de retrait des composants de l'arbre ?",opts:["Clavette→Bague→Cône","Bout→Clavette→Bague→Cône","Cône→Bague→Clavette","Bague→Cône→Bout"],c:1,exp:"Ordre inverse du montage : Bout d'arbre → Clavette → Bague → Cône."},
+  {cat:"DEM",mod:"DEM-03",q:"Première action — démontage bobine ?",opts:["Desserrer paliers","Prélever 2 échantillons","Dégonfler arbre","Décharger fourchettes"],c:1,exp:"Commencer par prélever 2 échantillons (qualité + conducteur)."},
+  {cat:"DEM",mod:"DEM-03",q:"Après évacuation de la bobine au stockage ?",opts:["Fermer paliers directement","Installer nouveau mandrin","Dégonfler","Nettoyer fourchettes"],c:1,exp:"Installer un nouveau mandrin avant de regonfler l'arbre."}
+];
+
+// =====================================================
+//  ÉTAT GLOBAL
+// =====================================================
+let apiKey='', currentOp='', hist=[], loading=false;
+let evalActive=false, evalTheme=null, evalMaxQ=0, currentEvalIdx=-1;
+let sessions=[], currentSession=null;
+let currentMode='assist', isManager=false, dashGranted=false;
+const MGR_CODE = 'AMCOR2026';
+const STORAGE_KEY = 'brio_v5_sessions_global';
+
+// Noms des gammes
+const codeNames = {
+  'MNT-01':'Montage cylindre sur arbre','MNT-02':'Montage cylindre sur chariot',
+  'MNT-03':'Montage bobine','MNT-04':'Passage de support',
+  'REG-01':'Réglage manuel Wizcon','REG-02':'Réglage automatique Eltromat',
+  'REG-03':'Contrôle viscosité AFNOR','ROU-01':'Embarquement',
+  'ROU-02':'Supervision production','ROU-03':'Qualité & Sécurité',
+  'DEM-01':'Démontage cylindre chariot','DEM-02':'Démontage cylindre arbre','DEM-03':'Démontage bobine'
+};
+
+const CATS = [
+  {k:'MNT', name:'Montage',   color:'#8b5cf6'},
+  {k:'REG', name:'Réglage',   color:'#1e6fd9'},
+  {k:'ROU', name:'Roulage',   color:'#10b981'},
+  {k:'DEM', name:'Démontage', color:'#f97316'}
+];
+
+// =====================================================
+//  BASE DE DONNÉES — localStorage GLOBAL PERSISTANT
+//  ─ Historique conservé même après relance / reboot
+//  ─ Chaque réponse sauvegardée immédiatement
+//  ─ Score incrémenté en temps réel
+// =====================================================
+
+function db_save(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+  }catch(e){
+    // Si plein, garder les 100 plus récentes
+    sessions = sessions.slice(0, 100);
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions)); }catch(e2){}
+  }
+}
+
+function db_load(){
+  try{
+    const d = localStorage.getItem(STORAGE_KEY);
+    const stored = d ? JSON.parse(d) : [];
+    // Fusionner localStorage + sessions en mémoire (éviter les doublons)
+    stored.forEach(s => {
+      const exists = sessions.some(x => x.op===s.op && x.date===s.date && x.theme===s.theme);
+      if(!exists) sessions.push(s);
+    });
+    // Trier par date décroissante
+    sessions.sort((a,b) => (b.date||'') > (a.date||'') ? 1 : -1);
+    if(sessions.length > 500) sessions = sessions.slice(0,500);
+    console.log('[BRIO DB] ' + sessions.length + ' sessions (mémoire + localStorage)');
+  }catch(e){
+    console.warn('[BRIO DB] Erreur:', e);
+  }
+}
+
+function db_addSession(sess){
+  // Remplacer si existe déjà (même op + date + theme)
+  sessions = sessions.filter(s => !(s.op===sess.op && s.date===sess.date && s.theme===sess.theme));
+  sessions.unshift(JSON.parse(JSON.stringify(sess)));
+  if(sessions.length > 500) sessions = sessions.slice(0, 500);
+  db_save();
+}
+
+// Sauvegarde de la progression EN COURS après chaque réponse
+function db_saveProgress(){
+  if(!currentSession) return;
+  const idx = sessions.findIndex(s =>
+    s.op===currentSession.op && s.date===currentSession.date && s.theme===currentSession.theme
+  );
+  const copy = JSON.parse(JSON.stringify(currentSession));
+  if(idx >= 0){ sessions[idx] = copy; }
+  else{ sessions.unshift(copy); if(sessions.length > 500) sessions = sessions.slice(0,500); }
+  db_save();
+}
+// =====================================================
+//  MOBILE SIDEBAR
+// =====================================================
+function openSb(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('sbOv').classList.add('show'); }
+function closeSb(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sbOv').classList.remove('show'); }
+
+// =====================================================
+//  LOGIN / LOGOUT
+// =====================================================
+async function login(){
+  const name   = document.getElementById('loginName').value.trim();
+  const key    = document.getElementById('loginKey').value.trim();
+  const errDiv = document.getElementById('loginError');
+  errDiv.style.display = 'none';
+  if(!name){ errDiv.textContent='⚠ Veuillez entrer votre nom.'; errDiv.style.display='block'; return; }
+
+  // ── Détection Manager ──────────────────────────────────
+  if(name === MGR_CODE || name === 'AMCOR2026'){
+    // Accès manager direct — pas besoin de clé API
+    isManager   = true;
+    dashGranted = true;
+    currentOp   = 'Manager';
+    apiKey      = key || 'manager';
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('opAv').textContent  = '👑';
+    document.getElementById('opNm').textContent  = 'Manager';
+    document.getElementById('roleBdg').textContent = '👑';
+    db_load();
+    // Redirection automatique vers le tableau de bord
+    switchTab('dash');
+    return;
+  }
+
+  // ── Connexion opérateur normal ──────────────────────────
+  if(key.length < 5){ errDiv.textContent='⚠ Clé API invalide.'; errDiv.style.display='block'; return; }
+  apiKey = key; currentOp = name;
+  try{ localStorage.setItem('brio_key', key); }catch(e){}
+  document.getElementById('loginScreen').style.display = 'none';
+  const ini = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('opAv').textContent  = ini;
+  document.getElementById('opNm').textContent  = name;
+  document.getElementById('roleBdg').textContent = '';
+  db_load();
+  addMsg('ag', `Bonjour <strong>${name}</strong> ! Bienvenue sur l'Agent BRIO.<br><br>Posez vos questions techniques ou cliquez sur une gamme dans le menu latéral.<br>Vous pouvez aussi lancer une <strong>évaluation certifiante</strong> depuis le menu.`);
+}
+
+async function logout(){
+  if(!confirm('Changer d\'opérateur ?')) return;
+  if(currentSession && currentSession.questions.some(q=>q.score!=null)) db_addSession(JSON.parse(JSON.stringify(currentSession)));
+  currentOp=''; apiKey=''; hist=[]; evalTheme=null; currentSession=null; evalActive=false;
+  isManager=false; dashGranted=false; currentEvalIdx=-1;
+  document.getElementById('loginName').value='';
+  document.getElementById('loginKey').value='';
+  document.getElementById('loginError').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  try{ const k=localStorage.getItem('brio_key'); if(k) document.getElementById('loginKey').value=k; }catch(e){}
+}
+
+// =====================================================
+//  MANAGER
+// =====================================================
+function openMgrOv(){ document.getElementById('mgrOv').classList.add('show'); document.getElementById('mgrInput').value=''; document.getElementById('mgrErr').style.display='none'; }
+function closeMgrOv(){ document.getElementById('mgrOv').classList.remove('show'); }
+function checkMgr(){
+  if(document.getElementById('mgrInput').value.trim() === MGR_CODE){
+    dashGranted=true; closeMgrOv(); switchTab('dash');
+  } else {
+    document.getElementById('mgrErr').style.display='block';
+  }
+}
+
+function handleDashTab(){
+  if(isManager || dashGranted){ switchTab('dash'); }
+  else{ openMgrOv(); }
+}
+
+function updateDashActions(){
+  const c = document.getElementById('dashActions');
+  if(isManager || dashGranted){
+    c.innerHTML = `
+      <button class="dbtn danger" onclick="clearAllSess()">🗑 Effacer tout</button>
+      <button class="dbtn pdf" onclick="pdfHistorique()">🖨️ Générer le rapport PDF</button>
+    `;
+  } else {
+    c.innerHTML = '<button class="dbtn pdf" onclick="generatePDF()">🖨️ Rapport PDF</button>';
+  }
+}
+
+// =====================================================
+//  NAVIGATION TABS
+// =====================================================
+function switchTab(t){
+  ['chat','sup','dash'].forEach(id=>{
+    document.getElementById('panel'+id.charAt(0).toUpperCase()+id.slice(1)).classList.toggle('active', id===t);
+  });
+  document.querySelectorAll('.htab').forEach((b,i)=>b.classList.toggle('active',['chat','sup','dash'][i]===t));
+  if(t==='dash'){
+    if(isManager||dashGranted){
+      document.getElementById('mgrOnly').style.display='block';
+      document.getElementById('noAcc').style.display='none';
+      renderDash(); // async, no need to await here
+    } else {
+      document.getElementById('mgrOnly').style.display='none';
+      document.getElementById('noAcc').style.display='block';
+    }
+    updateDashActions();
+  }
+}
+
+function setMode(m){
+  currentMode=m;
+  document.getElementById('modeAssist').classList.toggle('active',m==='assist');
+  document.getElementById('modeEval').classList.toggle('active',m==='eval');
+  const chips = document.getElementById('quickChips');
+  if(m==='eval'){
+    chips.innerHTML='<span class="chip" style="border-color:#d97706;color:#d97706" onclick="evalMode(\'Montage\',\'MNT\')">Montage 10Q</span><span class="chip" style="border-color:#d97706;color:#d97706" onclick="evalMode(\'Réglage\',\'REG\')">Réglage 13Q</span><span class="chip" style="border-color:#d97706;color:#d97706" onclick="evalMode(\'Roulage\',\'ROU\')">Roulage 11Q</span><span class="chip" style="border-color:#d97706;color:#d97706" onclick="evalMode(\'Démontage\',\'DEM\')">Démontage 6Q</span><span class="chip" style="border-color:#d97706;color:#d97706;font-weight:700" onclick="evalMode(\'Complet\',\'ALL\')">Complet 40Q</span>';
+  } else {
+    chips.innerHTML='<span class="chip" onclick="sendQ(this.dataset.q)" data-q="Quels EPI sont obligatoires sur la BRIO ?">🦺 EPI</span><span class="chip" onclick="sendQ(this.dataset.q)" data-q="Comment controler la viscosite avec la coupe AFNOR ?">🧪 Viscosité</span><span class="chip" onclick="sendQ(this.dataset.q)" data-q="Expliquer les regles flux VF conducteur et cinematique">↔ Flux VF</span><span class="chip" onclick="sendQ(this.dataset.q)" data-q="Quelles sont les causes des trainees impression ?">🔴 Défauts</span>';
+  }
+}
+
+// =====================================================
+//  NAVIGATION GAMMES
+// =====================================================
+function ask(code){
+  evalTheme=null; currentSession=null; hideBanner();
+  if(currentMode!=='assist') setMode('assist');
+  const q = `Explique-moi toutes les étapes de BRIO-${code} (${codeNames[code]||code}). Donne les étapes numérotées, les EPI obligatoires et les points de vigilance importants.`;
+  document.getElementById('inp').value = q;
+  send();
+}
+
+function sendQ(t){ document.getElementById('inp').value=t; send(); }
+
+// =====================================================
+//  ÉVALUATION QCM — LOGIQUE LOCALE (0 appel API)
+// =====================================================
+function evalMode(name, code){
+  let qs = code==='ALL' ? [...EVALS] : EVALS.filter(q=>q.cat===code);
+  for(let i=qs.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [qs[i],qs[j]]=[qs[j],qs[i]]; }
+  evalMaxQ=qs.length; currentEvalIdx=0;
+  evalTheme=code; evalActive=true;
+  currentSession={op:currentOp,theme:name,code,date:new Date().toLocaleString('fr-FR'),questions:[],evalQuestions:qs,catScores:{},_sh:{}};
+  showBanner(name,0,evalMaxQ);
+  if(currentMode!=='eval') setMode('eval');
+  switchTab('chat');
+  postQ(0);
+}
+
+function postQ(idx){
+  if(!currentSession||!evalActive) return;
+  if(idx>=evalMaxQ){ finishEval(); return; }
+  currentEvalIdx=idx;
+  const q=currentSession.evalQuestions[idx];
+  const L=['A','B','C','D'];
+  const cc={MNT:'#8b5cf6',REG:'#1e6fd9',ROU:'#10b981',DEM:'#f97316'};
+  const col=cc[q.cat]||'#1e6fd9';
+  const om=q.opts.map((t,i)=>({t,ok:i===q.c}));
+  for(let i=om.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [om[i],om[j]]=[om[j],om[i]]; }
+  const ci=om.findIndex(o=>o.ok);
+  const qid='qcm_'+idx+'_'+Date.now();
+  currentSession._sh[idx]={opts:om.map(o=>o.t),ci};
+  const btns=om.map((o,i)=>`<button class="qcm-btn" id="${qid}_${i}" onclick="answerQ(${idx},'${qid}',${i})" style="border-left-color:${col}25;"><span class="qcm-ltr" style="background:${col}18;color:${col};">${L[i]}</span><span class="qcm-txt">${esc(o.t)}</span></button>`).join('');
+  const html=`<div class="qcm-card" id="${qid}"><div class="qcm-hdr"><span class="qcm-badge" style="background:${col}15;color:${col};border:1px solid ${col}25;">${q.mod}</span><span class="qcm-num">Q${idx+1}/${evalMaxQ}</span></div><div class="qcm-q">${esc(q.q)}</div><div class="qcm-opts">${btns}</div></div>`;
+  const a=document.getElementById('msgs');
+  const d=document.createElement('div'); d.className='msg ag';
+  d.innerHTML=`<div class="av ag">IA</div><div class="bbl" style="max-width:93%;padding:0;background:transparent;border:none;box-shadow:none;">${html}</div>`;
+  a.appendChild(d); a.scrollTop=a.scrollHeight;
+  currentSession.questions.push({q:q.q,a:'',score:null,comment:'',cat:q.cat,exp:q.exp});
+  updBanner(idx,evalMaxQ);
+}
+
+function answerQ(idx,qid,chosen){
+  if(!currentSession||!evalActive||currentEvalIdx!==idx) return;
+  const sh=currentSession._sh[idx]; if(!sh) return;
+  const ok=(chosen===sh.ci);
+  currentEvalIdx=-1;
+  const card=document.getElementById(qid); if(!card) return;
+  card.querySelectorAll('.qcm-btn').forEach((b,i)=>{
+    b.disabled=true; b.style.cursor='default';
+    if(i===sh.ci){ b.style.background='#d1fae5'; b.style.borderLeftColor='#10b981'; b.style.borderLeftWidth='4px'; b.querySelector('.qcm-ltr').style.background='#10b981'; b.querySelector('.qcm-ltr').style.color='white'; }
+    if(i===chosen&&!ok){ b.style.background='#fee2e2'; b.style.borderLeftColor='#dc2626'; b.style.borderLeftWidth='4px'; b.querySelector('.qcm-ltr').style.background='#dc2626'; b.querySelector('.qcm-ltr').style.color='white'; }
+  });
+  const fb=document.createElement('div');
+  fb.className='qcm-fb '+(ok?'ok':'er');
+  const q=currentSession.evalQuestions[idx];
+  fb.innerHTML=`<strong>${ok?'✓ Correct !':'✗ Incorrect'}</strong> — ${esc(q.exp)}`;
+  card.appendChild(fb);
+  document.getElementById('msgs').scrollTop=99999;
+  const qo=currentSession.questions[idx];
+  qo.a=sh.opts[chosen]; qo.score=ok?10:0; qo.comment=q.exp;
+  if(!currentSession.catScores[q.cat]) currentSession.catScores[q.cat]=[];
+  currentSession.catScores[q.cat].push(ok?10:0);
+  // ── Sauvegarder la progression immédiatement ──
+  db_saveProgress();
+  updStats();
+  const next=idx+1; updBanner(next,evalMaxQ);
+  if(next>=evalMaxQ){ setTimeout(()=>finishEval(),1200); }
+  else{ currentEvalIdx=next; setTimeout(()=>postQ(next),700); }
+}
+
+function showBanner(name,cur,tot){
+  document.getElementById('evBan').classList.add('show');
+  document.getElementById('evBanInfo').textContent=`Évaluation ${name} — ${cur}/${tot} questions`;
+  document.getElementById('evProgFill').style.width=tot?Math.round(cur/tot*100)+'%':'0%';
+  document.getElementById('evProgLbl').textContent=`${cur}/${tot}`;
+}
+function hideBanner(){ document.getElementById('evBan').classList.remove('show'); evalActive=false; evalTheme=null; }
+function updBanner(cur,tot){ if(evalTheme&&currentSession) showBanner(currentSession.theme,cur,tot); }
+function updStats(){
+  if(!currentSession){ return; }
+  const answered = currentSession.questions.filter(q=>q.score!=null);
+  const scores   = answered.map(q=>q.score);
+  const correct  = scores.filter(s=>s>=7).length;
+  const total    = answered.length;
+  const avg      = total ? (scores.reduce((a,b)=>a+b,0)/total).toFixed(1) : null;
+  // Compteur de questions répondues
+  document.getElementById('sQ').textContent = total;
+  // Score moyen en temps réel + compteur correct/total
+  if(avg){
+    document.getElementById('sS').textContent = avg + '/10 (' + correct + '✓/' + total + ')';
+  }
+}
+
+async function finishEval(){
+  if(!currentSession) return;
+  const sess=currentSession;
+  db_addSession(JSON.parse(JSON.stringify(sess)));
+  evalTheme=null; evalActive=false; currentEvalIdx=-1; hideBanner();
+  const sc=sess.questions.map(q=>q.score).filter(x=>x!=null);
+  const avg=sc.length?(sc.reduce((a,b)=>a+b,0)/sc.length).toFixed(1):0;
+  const pct=Math.round(parseFloat(avg)*10);
+  const cor=sc.filter(s=>s>=7).length, par=sc.filter(s=>s>=5&&s<7).length, wr=sc.filter(s=>s<5).length;
+  let niv,ico;
+  if(pct>=80){niv='CERTIFIÉ — Expert';ico='🏆';}
+  else if(pct>=60){niv='QUALIFIÉ — Confirmé';ico='✅';}
+  else if(pct>=40){niv='EN FORMATION';ico='⚠️';}
+  else{niv='FORMATION REQUISE';ico='❌';}
+  let ch='<div class="bilan-cats">';
+  CATS.forEach(({k,name:cn,color})=>{
+    const cs=sess.catScores&&sess.catScores[k]?sess.catScores[k]:[];
+    const ca=cs.length?(cs.reduce((a,b)=>a+b,0)/cs.length).toFixed(1):'—';
+    ch+=`<div class="bilan-cat"><div class="bilan-cat-dot" style="background:${color}"></div><div class="bilan-cat-name">${cn}</div><div class="bilan-cat-sc" style="color:${color}">${ca}${ca!=='—'?'/10':''}</div></div>`;
+  });
+  ch+='</div>';
+  const a=document.getElementById('msgs');
+  const d=document.createElement('div'); d.className='msg ag';
+  d.innerHTML=`<div class="av ag">IA</div><div class="bbl" style="max-width:91%"><div class="bilan"><div class="bilan-ttl">${ico} Bilan de certification</div><div class="bilan-row"><span class="bilan-lbl">Opérateur</span><span class="bilan-val">${esc(sess.op)}</span></div><div class="bilan-row"><span class="bilan-lbl">Score global</span><span class="bilan-val" style="color:${pct>=70?'#34d399':pct>=50?'#fbbf24':'#f87171'}">${avg}/10 (${pct}%)</span></div><div class="bilan-row"><span class="bilan-lbl">Niveau</span><span class="bilan-val">${niv}</span></div><div class="bilan-row"><span class="bilan-lbl">Résultats</span><span class="bilan-val">✓${cor} ~${par} ✗${wr}</span></div>${ch}</div><br><small style="color:var(--muted)">Allez dans <strong>Éval.</strong> (code manager) pour le tableau de bord complet.</small></div>`;
+  a.appendChild(d); a.scrollTop=a.scrollHeight;
+  currentSession=null;
+}
+
+// =====================================================
+//  MESSAGES UI
+// =====================================================
+function addMsg(role, text){
+  const a=document.getElementById('msgs');
+  const d=document.createElement('div'); d.className='msg '+(role==='user'?'user':'ag');
+  if(role==='user') document.getElementById('sM').textContent=parseInt(document.getElementById('sM').textContent||0)+1;
+  let fmt=text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^###\s+(.+)$/gm,'<div style="font-weight:700;font-size:13px;color:var(--navy);margin:9px 0 3px;">$1</div>')
+    .replace(/^##\s+(.+)$/gm,'<div style="font-weight:700;font-size:13.5px;color:var(--navy);margin:11px 0 4px;border-bottom:1px solid var(--border);padding-bottom:3px;">$1</div>')
+    .replace(/^(\d+)\.\s+(.+)$/gm,'<div style="display:flex;gap:7px;padding:2px 0;"><span style="min-width:18px;font-weight:700;color:var(--blue);font-size:11.5px;font-family:DM Mono,monospace;">$1.</span><span>$2</span></div>')
+    .replace(/^[-•]\s+(.+)$/gm,'<div style="display:flex;gap:7px;padding:2px 0;"><span style="color:var(--blue);font-size:13px;line-height:1.3;">›</span><span>$1</span></div>')
+    .replace(/\n\n/g,'<div style="height:7px;"></div>')
+    .replace(/\n/g,'<br>');
+  const ini=currentOp?currentOp.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2):'OP';
+  d.innerHTML=`<div class="av ${role==='user'?'us':'ag'}">${role==='user'?ini:'IA'}</div><div class="bbl">${fmt}</div>`;
+  a.appendChild(d); a.scrollTop=a.scrollHeight;
+}
+
+function addTyping(){ const a=document.getElementById('msgs'); const d=document.createElement('div'); d.className='tw'; d.id='ty'; d.innerHTML='<div class="av ag">IA</div><div class="ty"><span></span><span></span><span></span></div>'; a.appendChild(d); a.scrollTop=a.scrollHeight; }
+function removeTyping(){ const t=document.getElementById('ty'); if(t) t.remove(); }
+
+async function clearChat(){
+  if(currentSession&&currentSession.questions.some(q=>q.score!=null)) db_addSession(JSON.parse(JSON.stringify(currentSession)));
+  hist=[]; evalTheme=null; currentSession=null; evalActive=false; hideBanner(); currentEvalIdx=-1;
+  document.getElementById('msgs').innerHTML='<div class="msg ag"><div class="av ag">IA</div><div class="bbl">Conversation réinitialisée.</div></div>';
+  ['sM','sQ'].forEach(id=>document.getElementById(id).textContent='0');
+  document.getElementById('sS').textContent='—';
+  document.getElementById('ctxLbl').textContent='';
+}
+
+function esc(s){ return (s||'').replace(/[&<>]/g,m=>m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
+
+// =====================================================
+//  DÉTECTION CONTEXTE KB
+// =====================================================
+function detectCtx(txt){
+  const t=txt.toLowerCase(); const s=[];
+  if(t.includes('viscosit')||t.includes('afnor')) s.push('REG-03');
+  if(t.includes('wizcon')||t.includes('barbotage')||t.includes('réglage manuel')) s.push('REG-01');
+  if(t.includes('eltromat')||t.includes('réglage auto')||t.includes('repérage')) s.push('REG-02');
+  if(t.includes('embarqu')||t.includes('changement de bobine')) s.push('ROU-01');
+  if(t.includes('supervis')||t.includes('défaut')||t.includes('traîné')||t.includes('décalage')||t.includes('teinte')) s.push('ROU-02');
+  if(t.includes('qualité')||t.includes('sécurité')||t.includes('epi')) s.push('ROU-03');
+  if(t.includes('arbre')&&!t.includes('démont')) s.push('MNT-01');
+  if(t.includes('chariot')&&!t.includes('démont')) s.push('MNT-02');
+  if(t.includes('bobin')&&!t.includes('démont')) s.push('MNT-03');
+  if(t.includes('support')||t.includes('triplex')||t.includes('papier levure')||t.includes('mixpap')) s.push('MNT-04');
+  if(t.includes('démont')&&t.includes('chariot')) s.push('DEM-01');
+  if(t.includes('démont')&&t.includes('arbre')) s.push('DEM-02');
+  if(t.includes('démont')&&t.includes('bobin')) s.push('DEM-03');
+  if(t.includes('flux')||t.includes('conducteur')||t.includes('cinématique')) s.push('MNT-01');
+  if(t.includes('racle')) s.push('REG-01','MNT-02','DEM-01');
+  if(t.includes('cône')||t.includes('bague')||t.includes('clavette')) s.push('MNT-01','DEM-02');
+  if(t.includes('montage')||t.includes('monter')) s.push('MNT-01','MNT-02');
+  if(t.includes('démontage')||t.includes('démonter')) s.push('DEM-01','DEM-02');
+  const u=[...new Set(s)];
+  return u.length ? u.slice(0,2) : Object.keys(KB).slice(0,3);
+}
+
+// =====================================================
+//  API GROQ
+// =====================================================
+function setStatus(state, txt){
+  const el=document.getElementById('apiStatus');
+  el.className='status-dot '+state;
+  document.getElementById('apiStatusTxt').textContent=txt;
+}
+
+async function groqCall(messages, retries=0){
+  const r = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
+    body:JSON.stringify({model:'llama-3.1-8b-instant', messages, max_tokens:700, temperature:0.4})
+  });
+  if(!r.ok){
+    const e=await r.json().catch(()=>({}));
+    const msg=e.error?.message||'';
+    if(r.status===429 && retries<2){
+      const w=parseInt(msg.match(/(\d+\.?\d*)s/)?.[1]||'10')+2;
+      await new Promise(res=>setTimeout(res,w*1000));
+      return groqCall(messages, retries+1);
+    }
+    throw new Error(r.status===401?'Clé API invalide — Groq':'Erreur '+r.status+': '+msg);
+  }
+  const d=await r.json();
+  return d.choices?.[0]?.message?.content||'';
+}
+
+async function testAPI(){
+  if(!apiKey){ addMsg('ag','❌ Aucune clé API.'); return; }
+  setStatus('wn','Test...');
+  addMsg('ag','🔌 Test de connexion à Groq en cours...');
+  try{
+    const rep = await groqCall([{role:'system',content:'Tu es un assistant.'},{role:'user',content:'Réponds juste: OK'}]);
+    setStatus('ok','✓ Groq (Llama 3.1)');
+    addMsg('ag',`✅ <strong>Groq opérationnel !</strong> Réponse : "${rep.substring(0,60)}" — Clé valide.`);
+  }catch(err){
+    setStatus('er','Erreur');
+    addMsg('ag','❌ '+err.message+'<br><small>Obtenez une clé gratuite sur <a href="https://console.groq.com" target="_blank" style="color:var(--blue)">console.groq.com</a></small>');
+  }
+}
+
+// =====================================================
+//  SEND (wrapper) + sendText (logique principale)
+// =====================================================
+function send(){
+  const inp=document.getElementById('inp');
+  const txt=inp.value.trim();
+  if(!txt) return;
+  inp.value=''; inp.style.height='auto';
+  sendText(txt);
+}
+
+async function sendText(txt){
+  if(loading){ loading=false; removeTyping(); }
+  if(!apiKey){ addMsg('ag','❌ Clé API manquante. Reconnectez-vous.'); return; }
+  if(!txt) return;
+  addMsg('user', txt);
+  loading=true;
+  document.getElementById('sbtn').disabled=true;
+  addTyping();
+  setStatus('wn','...');
+
+  const secs=detectCtx(txt);
+  const ctx=secs.map(s=>(KB[s]||'').split('\n').slice(0,18).join('\n')).filter(Boolean).join('\n\n');
+
+  const SYS=`Tu es l'agent technique BRIO chez Amcor Flexibles Mohammedia, expert des procédures d'impression flexographique.
+Réponds TOUJOURS en français, de façon précise et structurée.
+Si on te demande une procédure: liste les étapes numérotées. Cite les codes gamme (ex: BRIO-MNT-01). Mentionne les EPI si pertinent.
+Sois direct et utile — pas de remplissage.
+
+PROCÉDURES BRIO DISPONIBLES:
+${ctx}`;
+
+  const histClean=hist.filter(m=>typeof m.content==='string').slice(-6);
+  const messages=[{role:'system',content:SYS},...histClean,{role:'user',content:txt}];
+
+  try{
+    const reply=await groqCall(messages);
+    if(!reply) throw new Error('Réponse vide');
+    hist.push({role:'user',content:txt});
+    hist.push({role:'assistant',content:reply});
+    if(hist.length>20) hist=hist.slice(-20);
+    removeTyping();
+    addMsg('ag',reply);
+    setStatus('ok','✓ Groq');
+    document.getElementById('ctxLbl').textContent='ctx: '+secs.join(', ');
+  }catch(err){
+    removeTyping();
+    setStatus('er','Erreur');
+    addMsg('ag','❌ '+err.message);
+  }
+  loading=false;
+  document.getElementById('sbtn').disabled=false;
+  document.getElementById('inp').focus();
+}
+
+// =====================================================
+//  DASHBOARD RENDU
+// =====================================================
+async function renderDash(){
+  updateDashActions();
+
+  // ── 1. Recharger depuis localStorage pour avoir toutes les sessions ──
+  const stored = localStorage.getItem('brio_v5_sessions_global');
+  if(stored){
+    try{
+      const arr = JSON.parse(stored);
+      // Fusionner sans doublons
+      arr.forEach(s=>{
+        const exists = sessions.some(x=>x.op===s.op && x.date===s.date && x.theme===s.theme);
+        if(!exists) sessions.push(s);
+      });
+    }catch(e){}
+  }
+
+  // ── 2. Construire les stats par opérateur (AVANT d'en avoir besoin) ──
+  const opMap={};
+  sessions.forEach(sess=>{
+    if(!sess.op) return;
+    if(!opMap[sess.op]) opMap[sess.op]={name:sess.op,nbSess:0,allSc:[],cats:{MNT:[],REG:[],ROU:[],DEM:[]},lastDate:''};
+    const op=opMap[sess.op];
+    op.nbSess++;
+    if((sess.date||'')>op.lastDate) op.lastDate=sess.date||'';
+    if(sess.catScores) CATS.forEach(({k})=>{ if(sess.catScores[k]) op.cats[k].push(...sess.catScores[k]); });
+    sess.questions.forEach(q=>{ if(q.score!=null) op.allSc.push(q.score); });
+  });
+  const avg = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+  const opsArr = Object.values(opMap);
+  opsArr.sort((a,b) => avg(b.allSc) - avg(a.allSc));
+
+  const allSc  = sessions.flatMap(s=>s.questions.map(q=>q.score).filter(x=>x!=null));
+  const moy    = allSc.length ? (allSc.reduce((a,b)=>a+b,0)/allSc.length).toFixed(1) : null;
+  const certified = opsArr.filter(op=>avg(op.allSc)>=8).length;
+  const qualified = opsArr.filter(op=>avg(op.allSc)>=6&&avg(op.allSc)<8).length;
+  const training  = opsArr.filter(op=>avg(op.allSc)<6&&op.allSc.length>0).length;
+
+  // ── 3. Cartes stats ──
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat-card bl-b"><div class="stat-val">${sessions.length}</div><div class="stat-lbl">📋 Sessions totales</div></div>
+    <div class="stat-card bl-b"><div class="stat-val">${opsArr.length}</div><div class="stat-lbl">👥 Conducteurs</div></div>
+    <div class="stat-card ok-b"><div class="stat-val" style="color:var(--ok)">${moy?moy+'/10':'—'}</div><div class="stat-lbl">⭐ Score moyen</div></div>
+    <div class="stat-card ok-b"><div class="stat-val" style="color:var(--ok)">${certified}</div><div class="stat-lbl">🏆 Certifiés (≥8)</div></div>
+    <div class="stat-card wn-b"><div class="stat-val" style="color:var(--wn)">${qualified}</div><div class="stat-lbl">✅ Qualifiés (6-8)</div></div>
+    <div class="stat-card" style="border-top:3px solid var(--er)"><div class="stat-val" style="color:var(--er)">${training}</div><div class="stat-lbl">⚠️ En formation</div></div>
+  `;
+
+  // ── 4. Tableau classement conducteurs ──
+  const medals=['🥇','🥈','🥉'];
+  const gammeHdrs=CATS.map(ct=>`<th class="c"><span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:6px;height:6px;border-radius:50%;background:${ct.color};display:inline-block;"></span>${ct.name}</span></th>`).join('');
+
+  if(opsArr.length===0){
+    document.getElementById('rankingWrap').innerHTML='<div class="empty">Aucun conducteur évalué.</div>';
+  } else {
+    const rows=opsArr.map((op,i)=>{
+      const ga=avg(op.allSc);
+      const gs=op.allSc.length?ga.toFixed(1)+'/10':'—';
+      const cls=ga>=7?'ok':ga>=5?'wn':'er';
+      const ini=op.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      const pos=i<3?medals[i]:`<span style="color:var(--muted2);font-weight:700;font-size:13px;">${i+1}</span>`;
+      const gcs=CATS.map(ct=>{
+        const sc=op.cats[ct.k]; const a=avg(sc); const pct=sc.length?Math.round(a*10):0;
+        const col=a>=7?'#10b981':a>=5?'#f59e0b':'#ef4444';
+        if(!sc.length) return `<td class="c"><span style="color:var(--muted2);font-size:11px;">—</span></td>`;
+        return `<td><div class="gamme-bar"><div class="gamme-b-wrap"><div class="gamme-b-fill" style="width:${pct}%;background:${ct.color};"></div></div><span class="gamme-sc" style="color:${col};">${a.toFixed(1)}</span></div></td>`;
+      }).join('');
+      return `<tr>
+        <td style="text-align:center;font-size:14px;">${pos}</td>
+        <td><div style="display:flex;align-items:center;gap:9px;"><div class="rk-av">${ini}</div><div><div class="rk-name">${esc(op.name)}</div><div class="rk-sub">${op.nbSess} session${op.nbSess>1?'s':''} · ${op.allSc.length} Q</div></div></div></td>
+        <td class="c">${op.allSc.length?`<span class="score-pill ${cls}">${gs}</span>`:'—'}</td>
+        ${gcs}
+        <td style="font-size:10px;color:var(--muted2);font-family:DM Mono,monospace;">${op.lastDate||'—'}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('rankingWrap').innerHTML=`<div class="rk-wrap"><table class="rk-table"><thead><tr><th style="width:42px;text-align:center;">#</th><th>Conducteur</th><th class="c">Score global</th>${gammeHdrs}<th>Dernière éval.</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+
+  // ── 5. Tableau synthèse toutes sessions ──
+  if(sessions.length===0){
+    document.getElementById('sessionsTableWrap').innerHTML='<div class="empty">📋 Aucune session enregistrée.</div>';
+    document.getElementById('sessionsEl').innerHTML='<div class="empty">📋 Aucune session enregistrée.</div>';
+    document.getElementById('rptWrap').style.display='none';
+    return;
+  }
+  document.getElementById('rptWrap').style.display='block';
+
+  const sessTableRows=sessions.map((sess,i)=>{
+    const sc=sess.questions.map(q=>q.score).filter(x=>x!=null);
+    const a=sc.length?(sc.reduce((x,y)=>x+y,0)/sc.length).toFixed(1):null;
+    const cor=sc.filter(s=>s>=7).length;
+    const col=a>=7?'var(--ok)':a>=5?'var(--wn)':'var(--er)';
+    const bg =a>=7?'var(--ok-bg)':a>=5?'var(--wn-bg)':'var(--er-bg)';
+    const niv=parseFloat(a)>=8?'CERTIFIÉ':parseFloat(a)>=6?'QUALIFIÉ':parseFloat(a)>=4?'EN FORMATION':a?'FORMATION REQUISE':'—';
+    const ini=(sess.op||'OP').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    return `<tr>
+      <td style="padding:9px 12px;font-size:11px;color:var(--muted2);font-family:DM Mono,monospace;text-align:center;">${i+1}</td>
+      <td style="padding:9px 12px;"><div style="display:flex;align-items:center;gap:8px;"><div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">${ini}</div><span style="font-weight:700;font-size:12.5px;">${esc(sess.op||'—')}</span></div></td>
+      <td style="padding:9px 12px;"><span style="background:var(--blue-light);color:var(--blue);padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600;">${esc(sess.theme||'—')}</span></td>
+      <td style="padding:9px 12px;font-size:11px;color:var(--muted);font-family:DM Mono,monospace;">${esc(sess.date||'—')}</td>
+      <td style="padding:9px 12px;text-align:center;font-size:12px;font-weight:600;">${sc.length}</td>
+      <td style="padding:9px 12px;text-align:center;font-size:12px;font-weight:600;color:var(--ok);">${cor}</td>
+      <td style="padding:9px 12px;text-align:center;">${a?`<span style="background:${bg};color:${col};padding:4px 13px;border-radius:20px;font-size:12px;font-weight:800;font-family:DM Mono,monospace;">${a}/10</span>`:'—'}</td>
+      <td style="padding:9px 12px;text-align:center;"><span style="background:${bg};color:${col};padding:2px 9px;border-radius:8px;font-size:9.5px;font-weight:700;">${niv}</span></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('sessionsTableWrap').innerHTML=`
+    <div class="rk-wrap">
+      <table class="rk-table">
+        <thead><tr>
+          <th style="text-align:center;width:36px;">#</th>
+          <th>Conducteur</th>
+          <th>Phase de test</th>
+          <th>Date</th>
+          <th style="text-align:center;">Questions</th>
+          <th style="text-align:center;">Correctes</th>
+          <th style="text-align:center;">Score</th>
+          <th style="text-align:center;">Niveau</th>
+        </tr></thead>
+        <tbody>${sessTableRows}</tbody>
+      </table>
+    </div>`;
+
+  // ── 6. Historique détaillé dépliable ──
+  document.getElementById('sessionsEl').innerHTML=sessions.slice(0,30).map((sess,i)=>{
+    const sc=sess.questions.map(q=>q.score).filter(x=>x!=null);
+    const a=sc.length?(sc.reduce((x,y)=>x+y,0)/sc.length).toFixed(1):null;
+    const cls=a>=7?'ok':a>=5?'wn':'er';
+    const id='ss_'+i;
+    const ini=(sess.op||'OP').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const rows=sess.questions.map((q,j)=>{
+      const s=q.score; const cl=s>=7?'ok':'er';
+      return `<div class="qa-row"><div class="qa-n">${j+1}</div><div class="qa-c"><div class="qa-q">${esc((q.q||'Q'+(j+1)).substring(0,110))}</div>${q.a?`<div class="qa-a">${esc(q.a.substring(0,70))}</div>`:''} ${s!=null?`<span class="qa-s ${cl}">${s>=7?'✓':'✗'} ${s}/10</span>`:''}</div></div>`;
+    }).join('');
+    return `<div class="ss-card"><div class="ss-hdr" onclick="document.getElementById('${id}').classList.toggle('open')"><div class="ss-op"><span style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${ini}</span>${esc(sess.op||'Opérateur')}</div><div class="ss-meta">${esc(sess.theme||'')} · ${esc(sess.date||'')}</div><div class="ss-meta">${sc.length}Q</div>${a?`<div class="ss-sc ${cls}">${a}/10</div>`:'<div class="ss-sc wn">En cours</div>'}<span style="color:var(--muted2);font-size:11px;">▾</span></div><div class="ss-body" id="${id}">${rows||'<div style="color:var(--muted);font-size:12px;">Aucune réponse.</div>'}</div></div>`;
+  }).join('');
+}
+// =====================================================
+//  EXPORT / IMPORT / CLEAR
+// =====================================================
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(sessions,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url;
+  a.download='brio_sessions_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(url);
+}
+async function importJSON(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=async ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(!Array.isArray(d)) throw new Error('Format invalide');
+      sessions=d; db_save(); renderDash();
+      alert(`Import réussi : ${sessions.length} sessions chargées.`);
+    }catch(err){ alert('Erreur : '+err.message); }
+    document.getElementById('impFile').value='';
+  };
+  r.readAsText(f);
+}
+async function clearAllSess(){
+  if(!isManager&&!dashGranted){alert('Accès manager requis.');return;}
+  if(!confirm('Supprimer TOUTES les évaluations ?')) return;
+  sessions=[]; db_save(); renderDash();
+}
+
+// =====================================================
+//  PDF HISTORIQUE COMPLET — Tous les conducteurs
+// =====================================================
+function pdfHistorique(){
+  // Utiliser sessions[] en mémoire (déjà à jour)
+  if(!sessions.length){ alert('Aucune évaluation enregistrée.'); return; }
+
+  // Construire stats par opérateur
+  const opMap = {};
+  sessions.forEach(sess => {
+    if(!sess.op) return;
+    if(!opMap[sess.op]) opMap[sess.op] = {
+      name: sess.op,
+      sessions: [],
+      allSc: [],
+      cats: {MNT:[],REG:[],ROU:[],DEM:[]},
+      lastDate: ''
+    };
+    const op = opMap[sess.op];
+    op.sessions.push(sess);
+    if((sess.date||'') > op.lastDate) op.lastDate = sess.date||'';
+    if(sess.catScores) CATS.forEach(({k}) => {
+      if(sess.catScores[k]) op.cats[k].push(...sess.catScores[k]);
+    });
+    sess.questions.forEach(q => { if(q.score != null) op.allSc.push(q.score); });
+  });
+
+  const avg = arr => arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
+  const opsArr = Object.values(opMap).sort((a,b) => avg(b.allSc) - avg(a.allSc));
+
+  const now = new Date();
+  const ds  = now.toLocaleDateString('fr-FR', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  const ref = 'HIST-' + now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+
+  // ── Lignes du tableau principal ──
+  const catColors = {MNT:'#8b5cf6', REG:'#1e6fd9', ROU:'#10b981', DEM:'#f97316'};
+  const medals = ['🥇','🥈','🥉'];
+
+  const opRows = opsArr.map((op, i) => {
+    const ga  = avg(op.allSc);
+    const gs  = op.allSc.length ? ga.toFixed(1) : null;
+    const col = ga>=8?'#059669': ga>=6?'#1e6fd9': ga>=4?'#d97706':'#dc2626';
+    const bg  = ga>=8?'#d1fae5': ga>=6?'#dbeafe': ga>=4?'#fef3c7':'#fee2e2';
+    const niv = ga>=8?'CERTIFIÉ': ga>=6?'QUALIFIÉ': ga>=4?'EN FORMATION':'FORMATION REQUISE';
+    const ini = op.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const pos = i < 3 ? medals[i] : (i+1);
+
+    // Scores par gamme
+    const catCells = CATS.map(({k, name:cn}) => {
+      const sc = op.cats[k];
+      if(!sc.length) return '<td style="padding:9px 11px;text-align:center;color:#94a3b8;">—</td>';
+      const a = avg(sc);
+      const cc = a>=7?'#059669': a>=5?'#d97706':'#dc2626';
+      const bgc= a>=7?'#d1fae5': a>=5?'#fef3c7':'#fee2e2';
+      return '<td style="padding:9px 11px;text-align:center;"><span style="background:'+bgc+';color:'+cc+';padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:monospace;">'+a.toFixed(1)+'/10</span></td>';
+    }).join('');
+
+    return '<tr style="border-bottom:1px solid #f1f5f9;">' +
+      '<td style="padding:10px 12px;font-size:16px;text-align:center;width:42px;">'+pos+'</td>' +
+      '<td style="padding:10px 12px;">' +
+        '<div style="display:flex;align-items:center;gap:10px;">' +
+          '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#0f2d52;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">'+ini+'</div>' +
+          '<div><div style="font-weight:700;font-size:13px;">'+esc(op.name)+'</div>' +
+          '<div style="font-size:10px;color:#64748b;">'+op.sessions.length+' évaluation'+(op.sessions.length>1?'s':'')+' · Dernière: '+esc(op.lastDate||'—')+'</div></div></div></td>' +
+      '<td style="padding:10px 12px;text-align:center;">'+(gs?'<span style="background:'+bg+';color:'+col+';padding:5px 14px;border-radius:20px;font-size:13px;font-weight:800;font-family:monospace;">'+gs+'/10</span>':'—')+'</td>' +
+      '<td style="padding:10px 12px;text-align:center;"><span style="background:'+bg+';color:'+col+';padding:3px 10px;border-radius:10px;font-size:10.5px;font-weight:700;">'+niv+'</span></td>' +
+      catCells +
+    '</tr>';
+  }).join('');
+
+  // ── Tableau détail par session ──
+  const sessRows = sessions.map((sess, i) => {
+    const sc  = sess.questions.map(q=>q.score).filter(x=>x!=null);
+    const a   = sc.length ? (sc.reduce((x,y)=>x+y,0)/sc.length).toFixed(1) : null;
+    const cor = sc.filter(s=>s>=7).length;
+    const col = a>=7?'#059669': a>=5?'#d97706':'#dc2626';
+    const bg  = a>=7?'#d1fae5': a>=5?'#fef3c7':'#fee2e2';
+    const niv = a>=8?'CERTIFIÉ': a>=6?'QUALIFIÉ': a>=4?'EN FORMATION': a?'FORMATION REQUISE':'—';
+    return '<tr style="border-bottom:1px solid #f1f5f9;'+(i%2===1?'background:#f8fafc;':'')+'">' +
+      '<td style="padding:8px 11px;font-size:11px;font-weight:700;color:#94a3b8;text-align:center;">'+(i+1)+'</td>' +
+      '<td style="padding:8px 11px;font-size:13px;font-weight:700;">'+esc(sess.op||'—')+'</td>' +
+      '<td style="padding:8px 11px;"><span style="background:#e4edfc;color:#1e6fd9;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600;">'+esc(sess.theme||'—')+'</span></td>' +
+      '<td style="padding:8px 11px;font-size:11.5px;color:#334155;font-family:monospace;">'+esc(sess.date||'—')+'</td>' +
+      '<td style="padding:8px 11px;text-align:center;font-size:12px;color:#334155;">'+sc.length+'</td>' +
+      '<td style="padding:8px 11px;text-align:center;font-size:12px;font-weight:700;color:#334155;">'+cor+'</td>' +
+      '<td style="padding:8px 11px;text-align:center;">'+(a?'<span style="background:'+bg+';color:'+col+';padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;font-family:monospace;">'+a+'/10</span>':'—')+'</td>' +
+      '<td style="padding:8px 11px;text-align:center;"><span style="background:'+bg+';color:'+col+';padding:2px 9px;border-radius:8px;font-size:10px;font-weight:700;">'+niv+'</span></td>' +
+    '</tr>';
+  }).join('');
+
+  // Stats globales
+  const allSc = sessions.flatMap(s=>s.questions.map(q=>q.score).filter(x=>x!=null));
+  const moyG  = allSc.length ? (allSc.reduce((a,b)=>a+b,0)/allSc.length).toFixed(1) : '—';
+  const certif= opsArr.filter(o=>avg(o.allSc)>=8).length;
+  const qualif= opsArr.filter(o=>avg(o.allSc)>=6&&avg(o.allSc)<8).length;
+  const form  = opsArr.filter(o=>avg(o.allSc)<6&&o.allSc.length>0).length;
+
+  const catHdrs = CATS.map(({name:n,color:col2}) =>
+    '<th style="text-align:center;padding:10px 11px;min-width:80px;"><span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:'+col2+';display:inline-block;"></span>'+n+'</span></th>'
+  ).join('');
+
+  const html = '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">' +
+  '<title>Historique BRIO — '+ds+'</title>' +
+  '<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Playfair+Display:wght@700;800&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">' +
+  '<style>' +
+    '*{box-sizing:border-box;margin:0;padding:0;}' +
+    'body{font-family:DM Sans,Arial,sans-serif;color:#0f2d52;background:white;}' +
+    '.page{max-width:960px;margin:0 auto;padding:30px 36px;}' +
+    '.hdr{background:linear-gradient(135deg,#0f2d52,#1a4480,#1e6fd9);padding:28px 34px;border-radius:14px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;}' +
+    '.hdr-left h1{font-family:Playfair Display,serif;font-size:26px;color:white;line-height:1.2;margin-bottom:5px;}' +
+    '.hdr-left p{font-size:11.5px;color:rgba(255,255,255,.55);letter-spacing:.4px;}' +
+    '.hdr-right{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:10px 16px;text-align:right;}' +
+    '.hdr-right small{font-size:9.5px;color:rgba(255,255,255,.45);display:block;margin-bottom:3px;}' +
+    '.hdr-right strong{font-family:DM Mono,monospace;font-size:12.5px;color:white;}' +
+    '.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:24px;}' +
+    '.kpi-card{background:#f4f8ff;border:1px solid #dce6f4;border-radius:11px;padding:14px 16px;text-align:center;}' +
+    '.kpi-v{font-family:Playfair Display,serif;font-size:30px;color:#0f2d52;line-height:1;}' +
+    '.kpi-l{font-size:10.5px;color:#5a7499;margin-top:4px;font-weight:500;}' +
+    '.kpi-card.ok{border-top:3px solid #059669;}.kpi-card.ok .kpi-v{color:#059669;}' +
+    '.kpi-card.wn{border-top:3px solid #d97706;}.kpi-card.wn .kpi-v{color:#d97706;}' +
+    '.kpi-card.er{border-top:3px solid #dc2626;}.kpi-card.er .kpi-v{color:#dc2626;}' +
+    '.sec{margin-bottom:26px;}' +
+    '.sec-hd{font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#1e6fd9;border-bottom:2px solid #1e6fd9;padding-bottom:6px;margin-bottom:14px;}' +
+    'table{width:100%;border-collapse:collapse;}' +
+    'thead th{background:#0f2d52;color:rgba(255,255,255,.7);padding:10px 11px;text-align:left;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}' +
+    'tbody tr:hover{background:#f4f8ff;}' +
+    '.footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:24px;padding-top:14px;border-top:1px solid #dce6f4;line-height:1.8;}' +
+    '@media print{@page{margin:15px;size:A4 landscape}body{padding:0}.page{padding:16px 22px;max-width:100%}-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+  '</style></head><body><div class="page">' +
+
+  // En-tête
+  '<div class="hdr"><div class="hdr-left"><h1>📊 Historique des Évaluations BRIO</h1><p>AMCOR FLEXIBLES MOHAMMEDIA · Rapport complet généré le '+ds+'</p></div>' +
+  '<div class="hdr-right"><small>Référence</small><strong>'+ref+'</strong></div></div>' +
+
+
+
+  // Tableau classement
+  '<div class="sec"><div class="sec-hd">Classement des conducteurs par score</div>' +
+  '<table style="border:1px solid #dce6f4;border-radius:12px;overflow:hidden;">' +
+  '<thead><tr><th style="text-align:center;width:42px;">#</th><th>Conducteur</th><th style="text-align:center;">Score global</th><th style="text-align:center;">Niveau</th>'+catHdrs+'</tr></thead>' +
+  '<tbody>'+opRows+'</tbody></table></div>' +
+
+  // Tableau détail sessions
+  '<div class="sec"><div class="sec-hd">Détail de toutes les sessions ('+sessions.length+')</div>' +
+  '<table style="border:1px solid #dce6f4;border-radius:12px;overflow:hidden;">' +
+  '<thead><tr>' +
+    '<th style="width:34px;text-align:center;">#</th>' +
+    '<th>Conducteur</th>' +
+    '<th>Phase de test</th>' +
+    '<th>Date</th>' +
+    '<th style="text-align:center;">Questions</th>' +
+    '<th style="text-align:center;">Correctes</th>' +
+    '<th style="text-align:center;">Score</th>' +
+    '<th style="text-align:center;">Niveau</th>' +
+  '</tr></thead>' +
+  '<tbody>'+sessRows+'</tbody></table></div>' +
+
+  // Footer
+  '<div class="footer">Généré le '+ds+' · Agent BRIO v5.0 · Amcor Flexibles Mohammedia · Réf: '+ref+'<br>Document confidentiel — usage interne uniquement · Imprimeuse BRIO</div>' +
+
+  '</div></body></html>';
+
+  const win = window.open('', '_blank');
+  if(!win){ alert('Autorisez les popups pour générer le PDF.'); return; }
+  win.document.write(html);
+  win.document.close();
+  setTimeout(() => win.print(), 900);
+}
+
+
+// =====================================================
+//  GÉNÉRATION RAPPORT PDF
+// =====================================================
+function generatePDF(){
+  // Génère le PDF historique complet de tous les conducteurs
+  pdfHistorique();
+}
+
+// =====================================================
+//  SECTION SEC-TITLE (helper CSS class en HTML pur)
+// =====================================================
+
+// =====================================================
+//  INIT
+// =====================================================
+window.onload = () => {
+  // Charger historique depuis localStorage au démarrage
+  sessions = [];
+  db_load();
+  try{ const k=localStorage.getItem('brio_key'); if(k) document.getElementById('loginKey').value=k; }catch(e){}
+  document.getElementById('loginKey').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
+  document.getElementById('loginName').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('loginKey').focus(); });
+  document.getElementById('inp').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
+  document.getElementById('mgrInput').addEventListener('keydown',e=>{ if(e.key==='Enter') checkMgr(); });
+  document.getElementById('loginName').focus();
+};
+</script>
+</body>
+</html>
